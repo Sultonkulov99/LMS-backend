@@ -13,9 +13,28 @@ datasource db {
 
 
 enum Roles {
-  USER
   TEACHER
   STUDENT
-  SUPPERADMIN
   ADMIN
+  SUPERADMIN
+}  
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  fullname  String
+  email     String   @unique
+  contact   String   @unique
+  photo     String?
+  role      Roles
+  status    Status   @default(ACTIVE)
+  password  String 
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
 }
