@@ -11,16 +11,18 @@ import { FetchUsersDto } from './dto/fetch-users.dto';
 import { PromiseManyData } from '../types/common/data-response';
 import { CreateAssistantDto } from './dto/create-assistant.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
+import { Status } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   private selectUser = {
     id: true,
     fullName: true,
     phone: true,
     role: true,
+    status: true,
     image: true,
     createdAt: true,
   };
@@ -40,20 +42,21 @@ export class UsersService {
   async getUsers(query: FetchUsersDto): PromiseManyData<TAuthUser> {
     const pquery = {
       where: {
+        status: Status.ACTIVE,
         role: query?.role || undefined,
         OR: query?.search
           ? [
-              {
-                fullName: {
-                  search: query?.search.replace(/\s/g, ' | '),
-                },
+            {
+              fullName: {
+                search: query?.search.replace(/\s/g, ' | '),
               },
-              {
-                phone: {
-                  search: query?.search.replace(/\s/g, ' | '),
-                },
+            },
+            {
+              phone: {
+                search: query?.search.replace(/\s/g, ' | '),
               },
-            ]
+            },
+          ]
           : undefined,
       },
     };
@@ -71,7 +74,7 @@ export class UsersService {
 
   async getUser(id: number) {
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: { id, status: Status.ACTIVE },
       select: {
         ...this.selectUser,
         _count: {
@@ -90,7 +93,7 @@ export class UsersService {
 
   async getMentor(id: number) {
     const mentor = await this.prisma.user.findUnique({
-      where: { id, role: UserRole.MENTOR },
+      where: { id, role: UserRole.MENTOR, status: Status.ACTIVE },
       select: {
         ...this.selectUser,
         mentorProfile: true,
@@ -111,6 +114,7 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({
       where: {
         phone,
+        status: Status.ACTIVE
       },
       select: this.selectUser,
     });
@@ -212,7 +216,7 @@ export class UsersService {
         'User has purchased courses! You cannot delete user',
       );
     }
-    await this.prisma.user.delete({ where: { id } });
+    await this.prisma.user.update({ where: { id }, data: { status: Status.INACTIVE } });
     return {
       success: true,
       message: 'User deleted',

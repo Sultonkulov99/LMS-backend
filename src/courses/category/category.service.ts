@@ -8,7 +8,7 @@ import { CreateCourseCategoryDto } from './dto/create.dto';
 import { PaginationDto } from '../../global/dto/pagination.dto';
 import { UpdateCourseCategoryDto } from './dto/update.dto';
 import { PromiseManyData } from '../../types/common/data-response';
-import { CourseCategory } from '@prisma/client';
+import { CourseCategory, Status } from '@prisma/client';
 import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
@@ -20,9 +20,11 @@ export class CourseCategoryService {
   ): PromiseManyData<Omit<CourseCategory, 'createdAt'>> {
     const [data, total] = await this.prisma.$transaction([
       this.prisma.courseCategory.findMany({
+        where: {status: Status.ACTIVE},
         select: {
           id: true,
           name: true,
+          status: true
         },
         skip: +pagination?.offset || 0,
         take: +pagination?.limit || 8,
@@ -34,7 +36,7 @@ export class CourseCategoryService {
 
   async getSingle(id: number, count?: boolean) {
     const category = await this.prisma.courseCategory.findUnique({
-      where: { id },
+      where: { id, status: Status.ACTIVE },
       include: count
         ? {
             _count: {
@@ -65,6 +67,7 @@ export class CourseCategoryService {
       where: { id },
       data: {
         name: payload.name,
+        status: payload.status
       },
     });
   }
@@ -76,8 +79,8 @@ export class CourseCategoryService {
         `There are ${category._count.courses} courses in this category, therefore you cannot delete course category. Please change those courses' categories to delete this category.`,
       );
     }
-    await this.prisma.courseCategory.delete({
-      where: { id },
+    await this.prisma.courseCategory.update({
+      where: { id }, data: {status: Status.INACTIVE}
     });
     return {
       success: true,
