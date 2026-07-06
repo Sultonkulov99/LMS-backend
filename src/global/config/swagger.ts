@@ -5,9 +5,4 @@ export const SwaggerDocConfig = new DocumentBuilder()
   .setDescription('The api description of E-Learning')
   .setVersion('1.0')
   .addBearerAuth()
-  .setContact(
-    'Developer',
-    'https://raupov_manuchehr.t.me',
-    'manuchekhr.3232@gmail.com',
-  )
   .build();

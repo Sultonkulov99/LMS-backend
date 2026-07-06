@@ -1,7 +1,6 @@
 import {
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,12 +14,15 @@ import { UserRole } from '../types/user';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
+import { RedisService } from '../global/redis/redis.service';
+import { normalizePhoneNumber } from '../utils/phone';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private redisService: RedisService,
   ) {}
 
   private async generateTokens(
@@ -54,9 +56,10 @@ export class AuthService {
   }
 
   async validateUser(phone: string, password: string) {
+    const normalizedPhone = normalizePhoneNumber(phone) || phone;
     const user = await this.prisma.user.findUnique({
       where: { 
-        phone,
+        phone: normalizedPhone,
       },
     });
     if (!user) {
@@ -77,17 +80,43 @@ export class AuthService {
   }
 
   async register(payload: RegisterDto) {
-    // await this.verificationService.checkConfirmOtp({
-    //   type: EVerificationTypes.REGISTER,
-    //   phone: payload.phone,
-    //   otp: payload.otp,
-    // });
+    const phone = normalizePhoneNumber(payload.phone);
+    if (!phone) {
+      throw new HttpException(
+        'Telefon raqami noto\'g\'ri formatda',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Check if user already exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { phone },
+    });
+    if (existingUser) {
+      throw new HttpException(
+        'Ushbu telefon raqami bilan foydalanuvchi allaqachon ro\'yxatdan o\'tgan',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const redisKey = `reg_${phone}`;
+    const storedOtp = await this.redisService.get(redisKey);
+    if (!storedOtp || storedOtp !== payload.otp) {
+      throw new HttpException(
+        'Noto\'g\'ri yoki muddati o\'tgan tasdiqlash kodi',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Delete OTP after successful verification to prevent reuse
+    await this.redisService.del(redisKey);
+
     const hashedPassword = await hashPassword(payload.password);
     const user = await this.prisma.user.create({
       data: {
         fullName: payload.fullName,
         password: hashedPassword,
-        phone: payload.phone,
+        phone,
         role: UserRole.STUDENT,
       },
       select: {
@@ -131,6 +160,7 @@ export class AuthService {
   }
 
   async resetPassword(payload: ResetPasswordDto) {
+    const phone = normalizePhoneNumber(payload.phone) || payload.phone;
     // await this.verificationService.checkConfirmOtp({
     //   type: EVerificationTypes.RESET_PASSWORD,
     //   otp: payload.otp,
@@ -139,7 +169,7 @@ export class AuthService {
     const hashedPassword = await hashPassword(payload.password);
     await this.prisma.user.update({
       where: {
-        phone: payload.phone,
+        phone,
       },
       data: {
         password: hashedPassword,

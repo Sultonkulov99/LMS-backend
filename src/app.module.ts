@@ -17,6 +17,8 @@ import { QuestionsModule } from './questions/questions.module';
 import { CacheModuleConfig } from './global/config/cache-module.config';
 import { PrismaModule } from './core/database/prisma.module';
 import { SeederModule } from './core/seeder/seeder.module';
+import { RedisModule } from './global/redis/redis.module';
+import { TelegramBotModule } from './telegram-bot/telegram-bot.module';
 
 @Module({
   imports: [
@@ -34,12 +36,14 @@ import { SeederModule } from './core/seeder/seeder.module';
     LessonsModule,
     ExamsModule,
     HomeworkModule,
-    QuestionsModule,
+    QuestionsModule, 
     UsersModule,
     PrismaModule,
     ContactModule,
     FilesModule,
-    SeederModule
+    SeederModule,
+    RedisModule,
+    TelegramBotModule
   ],
   controllers: [AppController],
   providers: [AppService],

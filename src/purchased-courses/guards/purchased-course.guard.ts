@@ -4,7 +4,6 @@ import {
   ExecutionContext,
   NotFoundException,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { TAuthUser } from '../../types/user';
 import { PrismaService } from 'src/core/database/prisma.service';
 

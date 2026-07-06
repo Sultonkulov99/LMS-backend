@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { ProfileController } from './profile.controller';
-import { SmsService } from '../global/services/sms.service';
 import { FilesService } from '../files/files.service';
 import { PrismaService } from 'src/core/database/prisma.service';
 
@@ -10,7 +9,6 @@ import { PrismaService } from 'src/core/database/prisma.service';
   providers: [
     ProfileService,
     PrismaService,
-    SmsService,
     FilesService,
   ],
 })
