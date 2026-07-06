@@ -116,7 +116,7 @@ export class CoursesService {
 
   async getCourse(id: string) {
     const course = await this.prisma.course.findUnique({
-      where: { id, published: true },
+      where: { id, published: true, },
       select: {
         ...this.selectManyCourse,
         about: true,

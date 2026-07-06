@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
@@ -43,6 +43,12 @@ enum HomeworkSubStatus {
   REJECTED
 }
 
+enum Status {
+  ACTIVE
+  INACTIVE
+  FREEZE
+}
+
 // Models 
 model User {
   id                  Int                  @id @default(autoincrement())
@@ -52,6 +58,7 @@ model User {
   fullName            String
   image               String?
   createdAt           DateTime             @default(now())
+  status              Status               @default(ACTIVE)
   courses             Course[]
   purchasedCourses    PurchasedCourse[]
   rates               Rating[]
@@ -63,7 +70,6 @@ model User {
   questionAnswers     QuestionAnswer[]
   lastActivity        LastActivity?
   views               LessonView[]
-  transactions        Transaction[]
 }
 
 model MentorProfile {
@@ -103,8 +109,9 @@ model LastActivity {
 }
 
 model CourseCategory {
-  id        Int      @id @default(autoincrement())
-  name      String
+  id     Int    @id @default(autoincrement())
+  name   String
+  status Status @default(ACTIVE)
   createdAt DateTime @default(now())
   courses   Course[]
 }
@@ -129,7 +136,6 @@ model Course {
   rates        Rating[]
   assistants   AssignedCourse[]
   questions    Question[]
-  transactions Transaction[]
 }
 
 model PurchasedCourse {
@@ -274,19 +280,4 @@ model QuestionAnswer {
   file       String?
   updatedAt  DateTime?
   createdAt  DateTime  @default(now())
-}
-
-model Transaction {
-  id           String    @id @default(uuid())
-  pid          String    @unique
-  amount       Decimal
-  perform_time DateTime?
-  create_time  DateTime?
-  cancel_time  DateTime?
-  state        Int
-  reason       Int?
-  userId       Int?
-  user         User?     @relation(references: [id], fields: [userId], onDelete: SetNull)
-  courseId     String?
-  course       Course?   @relation(references: [id], fields: [courseId], onDelete: SetNull)
 }
