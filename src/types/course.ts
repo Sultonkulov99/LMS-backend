@@ -1,0 +1,9 @@
+export enum CourseLevel {
+  BEGINNER = 'BEGINNER',
+  PRE_INTERMEDIATE = 'PRE_INTERMEDIATE',
+  INTERMEDIATE = 'INTERMEDIATE',
+  UPPER_INTERMEDIATE = 'UPPER_INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+}
+
+export type TCourseRate = 1 | 2 | 3 | 4 | 5;

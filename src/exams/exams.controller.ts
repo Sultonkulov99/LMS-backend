@@ -1,0 +1,153 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { ExamsService } from './exams.service';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { TAuthUser, UserRole } from '../types/user';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../global/guards/roles.guard';
+import { Roles } from '../global/decorators/roles';
+import { CreateExamDto, CreateManyExamDto } from './dto/create-exam.dto';
+import { AnswerExamDto } from './dto/answer-exam.dto';
+import { UpdateExamDto } from './dto/update-exam.dto';
+import {
+  FetchExamResultsDto,
+  FetchGroupExamResultsDto,
+} from './dto/fetch-exam-results.dto';
+import { PurchasedCourseGuard } from '../purchased-courses/guards/purchased-course.guard';
+
+@ApiTags('Exams')
+@Controller('api/exams')
+export class ExamsController {
+  constructor(private readonly examsService: ExamsService) {}
+
+  @ApiOperation({
+    summary: `${UserRole.STUDENT}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
+  @Roles([UserRole.STUDENT])
+  @Get('lesson-group/:lessonGroupId')
+  getGroupExams(@Param('lessonGroupId') id: string, @Req() req) {
+    return this.examsService.getGroupExams(+id, req.user as TAuthUser);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.STUDENT}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
+  @Roles([UserRole.STUDENT])
+  @Post('pass')
+  passExam(@Body() payload: AnswerExamDto, @Req() req) {
+    return this.examsService.passExam(payload, req.user as TAuthUser);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Get('lesson-group/details/:id')
+  getGroupExamsAdmin(@Param('id') id: string, @Req() req) {
+    return this.examsService.getGroupExams(+id, req.user as TAuthUser, true);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Get('detail/:id')
+  getDetail(@Param('id') id: string, @Req() req) {
+    return this.examsService.getDetail(+id, req.user as TAuthUser);
+  }
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Post('create')
+  createExam(@Body() payload: CreateExamDto, @Req() req) {
+    return this.examsService.createExam(payload, req.user as TAuthUser);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Post('create/many')
+  createManyExam(@Body() payload: CreateManyExamDto, @Req() req) {
+    return this.examsService.createManyExam(payload, req.user as TAuthUser);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Patch('update/:id')
+  updateExam(
+    @Param('id') id: string,
+    @Body() payload: UpdateExamDto,
+    @Req() req,
+  ) {
+    return this.examsService.updateExam(+id, payload, req.user as TAuthUser);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Delete(':id')
+  deleteExam(@Param('id') id: string, @Req() req) {
+    return this.examsService.deleteExam(+id, req.user as TAuthUser);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN])
+  @Get('results')
+  getExamResults(@Query() query: FetchExamResultsDto) {
+    return this.examsService.getExamResults(query);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.MENTOR}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.MENTOR])
+  @Get('results/lesson-group/:id')
+  getGroupExamResults(
+    @Param('id') id: string,
+    @Query() query: FetchGroupExamResultsDto,
+    @Req() req,
+  ) {
+    return this.examsService.getGroupExamResults(
+      +id,
+      query,
+      req.user as TAuthUser,
+    );
+  }
+}
