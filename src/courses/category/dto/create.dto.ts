@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { Status } from '@prisma/client';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class CreateCourseCategoryDto {
   @ApiProperty({
@@ -7,4 +8,9 @@ export class CreateCourseCategoryDto {
   })
   @IsString()
   name: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(Status)
+  status: Status;
 }
