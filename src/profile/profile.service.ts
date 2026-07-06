@@ -4,10 +4,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
 import { UpdatePhoneDto } from './dto/update-phone.dto';
 import { TAuthUser } from '../types/user';
-import { EVerificationTypes } from '../types/verification';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FilesService } from '../files/files.service';
 import { EFileType } from '../types/files';
@@ -16,6 +14,7 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { checkPassword, hashPassword } from '../utils/bcrypt';
 import { UpdateMentorProfileDto } from './dto/update-mentor-profile.dto';
 import { SetLastActivityDto } from './dto/set-last-activity.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class ProfileService {

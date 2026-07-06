@@ -4,12 +4,12 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { PrismaService } from '../../database/prisma.service';
 import { CreateCourseCategoryDto } from './dto/create.dto';
 import { PaginationDto } from '../../global/dto/pagination.dto';
 import { UpdateCourseCategoryDto } from './dto/update.dto';
 import { PromiseManyData } from '../../types/common/data-response';
 import { CourseCategory } from '@prisma/client';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class CourseCategoryService {

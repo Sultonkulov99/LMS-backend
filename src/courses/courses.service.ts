@@ -5,7 +5,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { TAuthUser, UserRole } from '../types/user';
 import { FilesService } from '../files/files.service';
@@ -17,6 +16,7 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 import { UpdateCourseMentorDto } from './dto/update-course-mentor.dto';
 import { AssignCourseDto } from './dto/assign-course.dto';
 import { PaginationDto } from '../global/dto/pagination.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class CoursesService {

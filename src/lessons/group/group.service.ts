@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../database/prisma.service';
 import { CreateLessonGroupDto } from './dto/create.dto';
 import { UpdateLessonGroupDto } from './dto/update.dto';
 import { PromiseManyData } from '../../types/common/data-response';
 import { LessonGroup } from '@prisma/client';
 import { TAuthUser, UserRole } from '../../types/user';
 import { FetchGroupsDto } from './dto/fetch-groups.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class LessonGroupService {

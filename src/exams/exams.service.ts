@@ -5,7 +5,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
 import { LessonGroupService } from '../lessons/group/group.service';
 import { CreateExamDto, CreateManyExamDto } from './dto/create-exam.dto';
 import { TAuthUser } from '../types/user';
@@ -18,6 +17,7 @@ import {
   FetchExamResultsDto,
   FetchGroupExamResultsDto,
 } from './dto/fetch-exam-results.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class ExamsService {

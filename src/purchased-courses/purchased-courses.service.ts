@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
 import {
   CreatePurchaseCourseDto,
   PurchaseCourseDto,
@@ -9,6 +8,7 @@ import { FetchPurchasedCoursesDto } from './dto/fetch-purchased-courses.dto';
 import { PromiseManyData } from '../types/common/data-response';
 import { Course, PaidVia, PurchasedCourse } from '@prisma/client';
 import { FetchCourseStudentsDto } from './dto/fetch-course-students.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class PurchasedCoursesService {

@@ -4,13 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaService } from '../database/prisma.service';
 import { hashPassword } from '../utils/bcrypt';
 import { TAuthUser, UserRole } from '../types/user';
 import { CreateMentorDto } from './dto/create-mentor.dto';
 import { FetchUsersDto } from './dto/fetch-users.dto';
 import { PromiseManyData } from '../types/common/data-response';
 import { CreateAssistantDto } from './dto/create-assistant.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class UsersService {

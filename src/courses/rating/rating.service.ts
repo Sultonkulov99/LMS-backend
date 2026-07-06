@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../database/prisma.service';
 import { RateCourseDto } from './dto/rate-course.dto';
 import { TAuthUser } from '../../types/user';
 import { PaginationDto } from '../../global/dto/pagination.dto';
 import { PromiseManyData } from '../../types/common/data-response';
 import { Rating } from '@prisma/client';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class CourseRatingService {

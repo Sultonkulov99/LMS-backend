@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
 import { CreateHomeworkDto } from './dto/create-homework.dto';
 import { TAuthUser, UserRole } from '../types/user';
 import { FilesService } from '../files/files.service';
@@ -19,6 +18,7 @@ import {
 import { SubmitHomeworkDto } from './dto/submit-homework.dto';
 import { CheckHomeworkDto } from './dto/check-homework.dto';
 import { FetchHomeworkSubmissionsDto } from './dto/fetch-homework-submissions.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class HomeworkService {

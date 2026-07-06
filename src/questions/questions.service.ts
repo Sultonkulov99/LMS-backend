@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
 import { CreateQuestionsDto } from './dto/create-questions.dto';
 import { TAuthUser, UserRole } from '../types/user';
 import { FilesService } from '../files/files.service';
@@ -17,6 +16,7 @@ import { Question } from '@prisma/client';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class QuestionsService {

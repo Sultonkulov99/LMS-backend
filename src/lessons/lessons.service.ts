@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { TAuthUser, UserRole } from '../types/user';
 import { LessonGroupService } from './group/group.service';
@@ -7,6 +6,7 @@ import { FilesService } from '../files/files.service';
 import { EFileType } from '../types/files';
 import { UpdateLessonDto } from './dto/udpate-lesson.dto';
 import { UpdateLessonViewDto } from './dto/update-lesson-view.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class LessonsService {

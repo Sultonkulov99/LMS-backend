@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../database/prisma.service';
 import { CreateLessonFileDto } from './dto/create.dto';
 import { TAuthUser } from '../../types/user';
 import { LessonsService } from '../lessons.service';
 import { FilesService } from '../../files/files.service';
 import { EFileType } from '../../types/files';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class LessonFilesService {
