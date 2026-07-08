@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -21,12 +22,19 @@ import { CreateMentorDto } from './dto/create-mentor.dto';
 import { FetchUsersDto } from './dto/fetch-users.dto';
 import { CreateAssistantDto } from './dto/create-assistant.dto';
 import { FetchUserByPhoneParamsDto } from './dto/fetch-user-by-phone.dto';
+import { UpdateMentorDto } from './dto/update-mentor.dto';
 
 @ApiTags('Users')
 @Controller('api/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('mentor/:id')
   getMentor(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getMentor(id);
@@ -70,7 +78,7 @@ export class UsersController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN,UserRole.SUPER_ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Post('create/admin')
   createAdmin(@Body() payload: CreateUserDto) {
     return this.usersService.createAdmin(payload);
@@ -81,7 +89,7 @@ export class UsersController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN,UserRole.SUPER_ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Post('create/mentor')
   createMentor(@Body() payload: CreateMentorDto) {
     return this.usersService.createMentor(payload);
@@ -96,6 +104,18 @@ export class UsersController {
   @Post('create/assistant')
   createAssistant(@Body() payload: CreateAssistantDto, @Req() req) {
     return this.usersService.createAssistant(payload, req.user as TAuthUser);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Patch('mentor/:id')
+  updateMentor(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateMentorDto) {
+    return this.usersService.updateMentor(payload, id);
+    
   }
 
   @ApiOperation({
