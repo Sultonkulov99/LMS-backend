@@ -9,7 +9,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     this.client = new Redis({
       host: process.env.REDIS_HOST || 'localhost', // docker service name
       port: Number(process.env.REDIS_PORT || 6379),
-
+      
       lazyConnect: true, // ⚠️ app yiqilmasin 
       retryStrategy(times) {
         if (times > 5) {

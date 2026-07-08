@@ -27,6 +27,7 @@ export class LessonsService {
         updatedAt: true,
         createdAt: true,
         homework: true,
+        youtube_link: true,
         lessonFiles: true,
       },
     });
@@ -88,6 +89,7 @@ export class LessonsService {
         name: payload.name,
         about: payload.about,
         groupId: group.id,
+        youtube_link: payload.youtube_link || "empty",
         video: 'empty',
       },
     });

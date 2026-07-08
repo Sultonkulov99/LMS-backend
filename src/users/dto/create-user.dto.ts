@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMobilePhone, IsOptional, IsString, MinLength } from 'class-validator';
+import { Status } from '@prisma/client';
+import { IsEnum, IsMobilePhone, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -13,6 +14,7 @@ export class CreateUserDto {
     example: 'Adminov Adminjon',
   })
   @IsString()
+  @MinLength(5)
   fullName: string;
 
   @ApiProperty()
@@ -22,6 +24,6 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsString()
-  status: string;
+  @IsEnum(Status)
+  status: Status;
 }
