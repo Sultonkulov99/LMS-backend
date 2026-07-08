@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsString, MaxLength } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsNumberString, IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
 export class CreateLessonDto {
   @ApiProperty({
@@ -19,8 +20,14 @@ export class CreateLessonDto {
   @IsNumberString()
   groupId: string;
 
+  @ApiProperty({required: false})
+  @Transform(({ value }) => (value === '' ? undefined : value))
+  @IsUrl()
+  @IsOptional()
+  youtube_link?: string;
+
   @ApiProperty({
-    required: true,
+    required: false,
     type: 'string',
     nullable: false,
     format: 'binary',

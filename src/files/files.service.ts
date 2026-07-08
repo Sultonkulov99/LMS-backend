@@ -3,7 +3,7 @@ import * as path from 'path';
 import { EFileType } from '../types/files';
 import { randomUUID } from 'crypto';
 import * as fs from 'fs';
-import * as ffmpeg from 'fluent-ffmpeg';
+import ffmpeg from 'fluent-ffmpeg';
 import { CourseVideoParamsDto } from './dto/course-video-params.dto';
 
 @Injectable()
@@ -69,35 +69,39 @@ export class FilesService {
         lessonId,
       );
       if (!fs.existsSync(videoDir)) {
-        fs.mkdirSync(videoDir);
+        fs.mkdirSync(videoDir, {recursive: true});
       }
-      let fileName = await this.saveFile(
-        file,
-        EFileType.COURSE_VIDEO,
-        path.join(lessonId, `original.${file.originalname.split('.').at(-1)}`),
-      );
-      fileName = fileName.split('/')[1];
-      ffmpeg(path.join(videoDir, fileName))
-        // .audioCodec('libopus')
-        // .audioBitrate(96)
-        .outputOptions([
-          '-profile:v baseline',
-          '-movflags faststart',
-          '-level 3.0',
-          '-start_number 0',
-          '-hls_time 10',
-          '-hls_list_size 0',
-          '-f hls',
-        ])
-        .output(path.join(videoDir, 'index.m3u8'))
-        .on('end', function (err, stdout, stderr) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(fileName);
-          }
-        })
-        .run();
+      if(file) {
+        let fileName = await this.saveFile(
+          file,
+          EFileType.COURSE_VIDEO,
+          path.join(lessonId, `original.${file?.originalname?.split('.')?.at(-1)}`),
+        );
+        fileName = fileName.split('/')[1];
+        ffmpeg(path.join(videoDir, fileName))
+          // .audioCodec('libopus')
+          // .audioBitrate(96)
+          .outputOptions([
+            '-profile:v baseline',
+            '-movflags faststart',
+            '-level 3.0',
+            '-start_number 0',
+            '-hls_time 10',
+            '-hls_list_size 0',
+            '-f hls',
+          ])
+          .output(path.join(videoDir, 'index.m3u8'))
+          .on('end', function (err) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(fileName);
+            }
+          })
+          .run();
+      } else {
+        resolve('empty')
+      }
     });
   }
 

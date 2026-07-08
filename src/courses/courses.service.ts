@@ -23,13 +23,15 @@ export class CoursesService {
   constructor(
     private prisma: PrismaService,
     private filesService: FilesService,
-  ) {}
+  ) { }
 
   private selectManyCourse = {
     id: true,
     name: true,
+    about: true,
     banner: true,
     level: true,
+    published: true,
     price: true,
     createdAt: true,
     category: {
@@ -128,6 +130,18 @@ export class CoursesService {
             image: true,
             mentorProfile: true,
           },
+        },
+        assistants: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                fullName: true,
+                image: true,
+                mentorProfile: true,
+              }
+            }
+          }
         },
         _count: {
           select: {

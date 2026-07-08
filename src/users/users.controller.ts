@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   Req,
@@ -27,8 +28,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('mentor/:id')
-  getMentor(@Param('id') id: string) {
-    return this.usersService.getMentor(+id);
+  getMentor(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getMentor(id);
   }
 
   @ApiOperation({
@@ -48,6 +49,7 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('single/:id')
+  @Roles([UserRole.ADMIN])
   getUser(@Param('id') id: string) {
     return this.usersService.getUser(+id);
   }
@@ -103,7 +105,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN])
   @Delete(':id')
-  deleteUser(@Param('id') id: string) {
-    return this.usersService.deleteUser(+id);
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.deleteUser(id);
   }
 }

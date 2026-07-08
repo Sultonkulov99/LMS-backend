@@ -176,7 +176,8 @@ model Lesson {
   id          String       @id @default(uuid())
   name        String
   about       String
-  video       String
+  video       String?
+  youtube_link String?
   groupId     Int
   group       LessonGroup  @relation(references: [id], fields: [groupId])
   updatedAt   DateTime?

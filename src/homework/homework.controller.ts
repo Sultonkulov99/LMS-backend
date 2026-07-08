@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -64,8 +65,8 @@ export class HomeworkController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT])
   @Get('detail/:id')
-  getDetailHomework(@Param('id') id: string, @Req() req) {
-    return this.homeworkService.getDetailHomework(+id, req.user as TAuthUser);
+  getDetailHomework(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.homeworkService.getDetailHomework(id, req.user as TAuthUser);
   }
 
   @ApiOperation({ summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}` })

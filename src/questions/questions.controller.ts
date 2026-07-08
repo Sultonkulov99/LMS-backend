@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -82,8 +83,8 @@ export class QuestionsController {
     UserRole.STUDENT,
   ])
   @Get('single/:id')
-  fetchSingle(@Param('id') id: string, @Req() req) {
-    return this.questionsService.fetchSingle(+id, req.user as TAuthUser);
+  fetchSingle(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.questionsService.fetchSingle(id, req.user as TAuthUser);
   }
 
   @ApiBearerAuth()
@@ -93,8 +94,8 @@ export class QuestionsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT])
   @Post('read/:id')
-  readQuestion(@Param('id') id: string, @Req() req) {
-    return this.questionsService.readQuestion(+id, req.user as TAuthUser);
+  readQuestion(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.questionsService.readQuestion(id, req.user as TAuthUser);
   }
 
   @ApiBearerAuth()
@@ -131,7 +132,7 @@ export class QuestionsController {
   @UseInterceptors(FileInterceptor('file'))
   @Patch('update/:id')
   updateQuestion(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() payload: UpdateQuestionDto,
     @Req() req: any,
     @UploadedFile(validateFile({ required: false, size: 50 }))
@@ -141,7 +142,7 @@ export class QuestionsController {
       payload.file = file;
     }
     return this.questionsService.updateQuestion(
-      +id,
+      id,
       payload,
       req.user as TAuthUser,
     );
@@ -155,7 +156,7 @@ export class QuestionsController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('answer/:id')
   createAnswer(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() payload: CreateAnswerDto,
     @Req() req: any,
     @UploadedFile(validateFile({ required: false, size: 50 }))
@@ -165,7 +166,7 @@ export class QuestionsController {
       payload.file = file;
     }
     return this.questionsService.createAnswer(
-      +id,
+      id,
       payload,
       req.user as TAuthUser,
     );
@@ -181,7 +182,7 @@ export class QuestionsController {
   @UseInterceptors(FileInterceptor('file'))
   @Patch('answer/:id')
   updateAnswer(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() payload: UpdateAnswerDto,
     @Req() req: any,
     @UploadedFile(validateFile({ required: false, size: 50 }))
@@ -191,7 +192,7 @@ export class QuestionsController {
       payload.file = file;
     }
     return this.questionsService.updateAnswer(
-      +id,
+      id,
       payload,
       req.user as TAuthUser,
     );
@@ -204,8 +205,8 @@ export class QuestionsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ASSISTANT, UserRole.ADMIN])
   @Delete('answer/delete/:id')
-  deleteAnswer(@Param('id') id: string, @Req() req) {
-    return this.questionsService.deleteAnswer(+id, req.user as TAuthUser);
+  deleteAnswer(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.questionsService.deleteAnswer(id, req.user as TAuthUser);
   }
 
   @ApiBearerAuth()
@@ -215,7 +216,7 @@ export class QuestionsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.STUDENT])
   @Delete('delete/:id')
-  deleteQuestion(@Param('id') id: string, @Req() req) {
-    return this.questionsService.deleteQuestion(+id, req.user as TAuthUser);
+  deleteQuestion(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.questionsService.deleteQuestion(id, req.user as TAuthUser);
   }
 }
