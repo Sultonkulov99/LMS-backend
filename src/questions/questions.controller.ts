@@ -43,10 +43,10 @@ export class QuestionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('mine')
   fetchMyQuestions(@Query() query: GetMyQuestionsQueryDto, @Req() req) {
     return this.questionsService.fetchMyQuestions(query, req.user as TAuthUser);
@@ -54,10 +54,10 @@ export class QuestionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}`,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @Get('course/:courseId')
   fetchCourseQuestions(
     @Param('courseId') courseId: string,
@@ -73,7 +73,7 @@ export class QuestionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}, ${UserRole.STUDENT}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}, ${UserRole.STUDENT},  ${UserRole.SUPER_ADMIN}`,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([
@@ -81,6 +81,7 @@ export class QuestionsController {
     UserRole.ADMIN,
     UserRole.ASSISTANT,
     UserRole.STUDENT,
+    UserRole.SUPER_ADMIN
   ])
   @Get('single/:id')
   fetchSingle(@Param('id', ParseIntPipe) id: number, @Req() req) {
@@ -89,20 +90,20 @@ export class QuestionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}`,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @Post('read/:id')
   readQuestion(@Param('id', ParseIntPipe) id: number, @Req() req) {
     return this.questionsService.readQuestion(id, req.user as TAuthUser);
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: UserRole.STUDENT })
+  @ApiOperation({ summary: `${ UserRole.STUDENT},  ${UserRole.SUPER_ADMIN}` })
   @ApiConsumes('multipart/form-data')
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @UseInterceptors(FileInterceptor('file'))
   @Post('create/:courseId')
   createQuestion(
@@ -124,11 +125,11 @@ export class QuestionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT},  ${UserRole.SUPER_ADMIN}`,
   })
   @ApiConsumes('multipart/form-data')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @UseInterceptors(FileInterceptor('file'))
   @Patch('update/:id')
   updateQuestion(
@@ -149,10 +150,10 @@ export class QuestionsController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: `${UserRole.MENTOR}, ${UserRole.ASSISTANT}` })
+  @ApiOperation({ summary: `${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}` })
   @ApiConsumes('multipart/form-data')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ASSISTANT])
+  @Roles([UserRole.MENTOR, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @UseInterceptors(FileInterceptor('file'))
   @Post('answer/:id')
   createAnswer(
@@ -174,11 +175,11 @@ export class QuestionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.ADMIN},  ${UserRole.SUPER_ADMIN}`,
   })
   @ApiConsumes('multipart/form-data')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ASSISTANT, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ASSISTANT, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @UseInterceptors(FileInterceptor('file'))
   @Patch('answer/:id')
   updateAnswer(
@@ -200,10 +201,10 @@ export class QuestionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.ADMIN},  ${UserRole.SUPER_ADMIN}`,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ASSISTANT, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ASSISTANT, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Delete('answer/delete/:id')
   deleteAnswer(@Param('id', ParseIntPipe) id: number, @Req() req) {
     return this.questionsService.deleteAnswer(id, req.user as TAuthUser);
@@ -211,10 +212,10 @@ export class QuestionsController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT},  ${UserRole.SUPER_ADMIN}`,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Delete('delete/:id')
   deleteQuestion(@Param('id', ParseIntPipe) id: number, @Req() req) {
     return this.questionsService.deleteQuestion(id, req.user as TAuthUser);

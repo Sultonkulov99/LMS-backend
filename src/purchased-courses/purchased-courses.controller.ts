@@ -29,11 +29,11 @@ export class PurchasedCoursesController {
   ) {}
 
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('mine')
   getMyCourses(@Query() query: FetchPurchasedCoursesDto, @Request() req) {
     const user = req.user as TAuthUser;
@@ -41,11 +41,11 @@ export class PurchasedCoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('mine/:course_id')
   getMyCourse(@Param('course_id') id: string, @Request() req) {
     const user = req.user as TAuthUser;
@@ -53,11 +53,11 @@ export class PurchasedCoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Post('purchase')
   purchaseCourse(@Body() payload: PurchaseCourseDto, @Request() req) {
     const user = req.user as TAuthUser;
@@ -65,11 +65,11 @@ export class PurchasedCoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('course/:id/students')
   getCourseStudents(
     @Param('id') id: string,
@@ -84,13 +84,13 @@ export class PurchasedCoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
     description:
       'This api is used to create purchasedCourse with property paidVia=CASH. Logically when student goes to Learning Center and pays for course by cash then this api is used to create.',
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Post('create')
   createPurchasedCourse(@Body() payload: CreatePurchaseCourseDto) {
     return this.purchasedCoursesService.createPurchasedCourse(payload);

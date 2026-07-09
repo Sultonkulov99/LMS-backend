@@ -40,11 +40,11 @@ export class HomeworkController {
   constructor(private readonly homeworkService: HomeworkService) {}
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @Get('course/:id')
   getCourseHomeWorks(
     @Param('id') id: string,
@@ -59,20 +59,20 @@ export class HomeworkController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @Get('detail/:id')
   getDetailHomework(@Param('id', ParseIntPipe) id: number, @Req() req) {
     return this.homeworkService.getDetailHomework(id, req.user as TAuthUser);
   }
 
-  @ApiOperation({ summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}` })
+  @ApiOperation({ summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}` })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   @Post('create')
@@ -85,10 +85,10 @@ export class HomeworkController {
     return this.homeworkService.createHomework(payload, req.user as TAuthUser);
   }
 
-  @ApiOperation({ summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}` })
+  @ApiOperation({ summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}` })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   @Patch('update/:id')
@@ -106,20 +106,20 @@ export class HomeworkController {
     );
   }
 
-  @ApiOperation({ summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}` })
+  @ApiOperation({ summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}` })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Delete('delete/:id')
   deleteHomework(@Param('id') id: string, @Req() req) {
     return this.homeworkService.deleteHomework(+id, req.user as TAuthUser);
   }
 
   // Submissions
-  @ApiOperation({ summary: `${UserRole.STUDENT}` })
+  @ApiOperation({ summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}` })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('submission/mine/:lessonId')
   getMyHomeworkSubmissions(
     @Param('lessonId') id: string,
@@ -133,10 +133,10 @@ export class HomeworkController {
     );
   }
 
-  @ApiOperation({ summary: `${UserRole.STUDENT}` })
+  @ApiOperation({ summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}` })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   @Post('submission/submit/:lessonId')
@@ -155,11 +155,11 @@ export class HomeworkController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @Get('submissions/all')
   getHomeworkSubmissions(
     @Query() query: FetchHomeworkSubmissionsDto,
@@ -172,11 +172,11 @@ export class HomeworkController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @Get('submissions/single/:id')
   getHomeworkSubmission(@Param('id') id: string, @Req() req) {
     return this.homeworkService.getHomeworkSubmission(
@@ -186,11 +186,11 @@ export class HomeworkController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @Post('submission/check')
   checkHomework(@Body() payload: CheckHomeworkDto, @Req() req) {
     return this.homeworkService.checkHomework(payload, req.user as TAuthUser);

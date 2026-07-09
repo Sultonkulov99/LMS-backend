@@ -42,17 +42,17 @@ export class ProfileController {
     return req.user as TAuthUser;
   }
 
-  @ApiOperation({ summary: UserRole.STUDENT })
+  @ApiOperation({ summary: `${UserRole.STUDENT }, ${UserRole.SUPER_ADMIN}`})
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('last-activity')
   getLastActivity(@Request() req) {
     return this.profileService.getLastActivity(req.user as TAuthUser);
   }
 
-  @ApiOperation({ summary: UserRole.STUDENT })
+  @ApiOperation({ summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}` })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Put('last-activity')
   setLastActivity(@Body() payload: SetLastActivityDto, @Request() req) {
     return this.profileService.setLastActivity(payload, req.user as TAuthUser);
@@ -90,9 +90,9 @@ export class ProfileController {
     return this.profileService.updatePassword(user, payload);
   }
 
-  @ApiOperation({ summary: UserRole.MENTOR })
+  @ApiOperation({ summary: `${UserRole.MENTOR},  ${UserRole.SUPER_ADMIN}` })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR])
+  @Roles([UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Patch('mentor-profile')
   updateMentorProfile(@Request() req, @Body() payload: UpdateMentorProfileDto) {
     const user: TAuthUser = req.user;
