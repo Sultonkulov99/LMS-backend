@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   Request,
@@ -38,11 +39,11 @@ export class CourseRatingController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Post()
   rateCourse(@Body() payload: RateCourseDto, @Request() req) {
     const user = req.user as TAuthUser;
@@ -50,13 +51,13 @@ export class CourseRatingController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Delete(':id')
-  deleteRating(@Param('id') id: string) {
-    return this.ratingService.deleteRating(+id);
+  deleteRating(@Param('id', ParseIntPipe) id: number) {
+    return this.ratingService.deleteRating(id);
   }
 }

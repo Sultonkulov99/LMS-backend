@@ -31,11 +31,11 @@ export class LessonFilesController {
   constructor(private lessonFilesService: LessonFilesService) {}
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Get('lesson/:lesson_id')
   getLessonFiles(@Param('lesson_id') id: string, @Request() req) {
     const user = req.user as TAuthUser;
@@ -43,12 +43,12 @@ export class LessonFilesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
     description: 'notes should be JSON array string[] type or null',
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @UseInterceptors(
     FileFieldsInterceptor([
       {
@@ -76,11 +76,11 @@ export class LessonFilesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Delete(':id')
   deleteFile(@Param('id') id: string, @Request() req) {
     const user = req.user as TAuthUser;

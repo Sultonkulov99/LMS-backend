@@ -32,10 +32,10 @@ export class LessonGroupController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: UserRole.STUDENT,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('mine-all/:course_id')
   getAllMine(
     @Query() query: FetchGroupsDto,
@@ -44,22 +44,25 @@ export class LessonGroupController {
   ) {
     return this.groupService.getAll(courseId, query, req.user as TAuthUser);
   }
-
+  
   @Get('detail/:id')
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN} ${UserRole.SUPER_ADMIN}`,
+  })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   getSingle(@Param('id') id: string, @Request() req) {
     const authUser = req.user as TAuthUser;
     return this.groupService.getSingle(+id, authUser);
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Post()
   createLessonGroup(@Body() payload: CreateLessonGroupDto, @Request() req) {
     const authUser = req.user as TAuthUser;
@@ -67,11 +70,11 @@ export class LessonGroupController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Put(':id')
   updateCategory(
     @Body() payload: UpdateLessonGroupDto,
@@ -83,11 +86,11 @@ export class LessonGroupController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Delete(':id')
   deleteCategory(@Param('id') id: string, @Request() req) {
     const authUser = req.user as TAuthUser;

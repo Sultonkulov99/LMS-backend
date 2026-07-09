@@ -48,33 +48,33 @@ export class CoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('my')
   getMyCourses(@Query() query: FetchUserCourses, @Request() req) {
     return this.coursesService.getUserCourses(query, req.user?.id, true);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('mentor/:id')
   getUserCourses(@Param('id') id: string, @Query() query: FetchUserCourses) {
     return this.coursesService.getUserCourses(query, +id);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ASSISTANT}`,
+    summary: `${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ASSISTANT])
+  @Roles([UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @Get('my/assigned')
   getMyAssignedCourses(@Query() query: FetchUserCourses, @Request() req) {
     return this.coursesService.getMyAssignedCourses(
@@ -84,11 +84,11 @@ export class CoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get(':courseId/assistants')
   getCourseAssistants(
     @Param('courseId') id: string,
@@ -103,22 +103,22 @@ export class CoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Post('assign-assistant')
   assignCourse(@Body() payload: AssignCourseDto, @Request() req) {
     return this.coursesService.assignCourse(payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Post('unassign-assistant')
   deleteAssignedCourse(@Body() payload: AssignCourseDto, @Request() req) {
     return this.coursesService.deleteAssignedCourse(
@@ -128,12 +128,12 @@ export class CoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiConsumes('multipart/form-data')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @UseInterceptors(
     FileFieldsInterceptor([
       {
@@ -173,12 +173,12 @@ export class CoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiConsumes('multipart/form-data')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @UseInterceptors(
     FileFieldsInterceptor([
       {
@@ -220,46 +220,46 @@ export class CoursesController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Post('publish/:id')
   publishCourse(@Param('id') id: string) {
     return this.coursesService.changeCoursePublished(id, true);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Post('unpublish/:id')
   unPublishCourse(@Param('id') id: string) {
     return this.coursesService.changeCoursePublished(id, false);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Patch('update-mentor')
   updateCourseMentor(@Body() payload: UpdateCourseMentorDto) {
     return this.coursesService.updateCourseMentor(payload);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
     description:
       'You can only delete draft courses. You cannot delete when it has been published, purchased or it has Lessons or Lesson Groups',
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Delete('delete/:id')
   deleteCourse(@Param('id') id: string, @Request() req) {
     return this.coursesService.deleteCourse(id, req.user as TAuthUser);

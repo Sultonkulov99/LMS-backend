@@ -31,42 +31,43 @@ export class CourseCategoryController {
   }
 
   @Get('single/:id')
-  getSingle(@Param('id') id: string) {
-    return this.categoryService.getSingle(+id);
+  getSingle(@Param('id', ParseIntPipe) id: number) {
+    return this.categoryService.getSingle(id);
   }
 
   @ApiOperation({
-    summary: UserRole.ADMIN,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Post()
   createCategory(@Body() payload: CreateCourseCategoryDto) {
     return this.categoryService.createCategory(payload);
   }
+
   @ApiOperation({
-    summary: UserRole.ADMIN,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Put(':id')
   updateCategory(
     @Body() payload: UpdateCourseCategoryDto,
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.categoryService.updateCategory(+id, payload);
+    return this.categoryService.updateCategory(id, payload);
   }
 
   @ApiOperation({
-    summary: UserRole.ADMIN,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Delete(':id')
-  deleteCategory(@Param('id') id: string) {
-    return this.categoryService.deleteCategory(+id);
+  deleteCategory(@Param('id', ParseIntPipe) id: number) {
+    return this.categoryService.deleteCategory(id);
   }
 }

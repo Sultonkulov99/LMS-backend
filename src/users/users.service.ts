@@ -25,6 +25,7 @@ export class UsersService {
     role: true,
     status: true,
     image: true,
+    courses: true,
     createdAt: true,
   };
 
@@ -113,6 +114,7 @@ export class UsersService {
       select: {
         ...this.selectUser,
         mentorProfile: true,
+        courses: true,
         _count: {
           select: {
             courses: true,

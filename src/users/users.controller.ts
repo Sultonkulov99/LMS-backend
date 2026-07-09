@@ -41,33 +41,33 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: UserRole.ADMIN,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get()
   getUsers(@Query() query: FetchUsersDto) {
     return this.usersService.getUsers(query);
   }
 
   @ApiOperation({
-    summary: UserRole.ADMIN,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('single/:id')
-  @Roles([UserRole.ADMIN])
-  getUser(@Param('id') id: string) {
-    return this.usersService.getUser(+id);
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
+  getUser(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getUser(id);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Get('by-phone/:phone')
   getUserByPhone(@Param() params: FetchUserByPhoneParamsDto) {
     return this.usersService.getUserByPhone(params.phone);
@@ -96,22 +96,22 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR},  ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Post('create/assistant')
   createAssistant(@Body() payload: CreateAssistantDto, @Req() req) {
     return this.usersService.createAssistant(payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR},  ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Patch('mentor/:id')
   updateMentor(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateMentorDto) {
     return this.usersService.updateMentor(payload, id);
@@ -119,11 +119,11 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: UserRole.ADMIN,
+    summary:`${UserRole.ADMIN},  ${UserRole.SUPER_ADMIN}`
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Delete(':id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.deleteUser(id);

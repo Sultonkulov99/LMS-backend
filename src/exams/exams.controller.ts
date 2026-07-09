@@ -31,76 +31,77 @@ export class ExamsController {
   constructor(private readonly examsService: ExamsService) {}
 
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('lesson-group/:lessonGroupId')
   getGroupExams(@Param('lessonGroupId') id: string, @Req() req) {
     return this.examsService.getGroupExams(+id, req.user as TAuthUser);
   }
 
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Post('pass')
   passExam(@Body() payload: AnswerExamDto, @Req() req) {
     return this.examsService.passExam(payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR, UserRole.ADMIN])
+  @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('lesson-group/details/:id')
   getGroupExamsAdmin(@Param('id') id: string, @Req() req) {
     return this.examsService.getGroupExams(+id, req.user as TAuthUser, true);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Get('detail/:id')
   getDetail(@Param('id') id: string, @Req() req) {
     return this.examsService.getDetail(+id, req.user as TAuthUser);
   }
+
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Post('create')
   createExam(@Body() payload: CreateExamDto, @Req() req) {
     return this.examsService.createExam(payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Post('create/many')
   createManyExam(@Body() payload: CreateManyExamDto, @Req() req) {
     return this.examsService.createManyExam(payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Patch('update/:id')
   updateExam(
     @Param('id') id: string,
@@ -111,33 +112,33 @@ export class ExamsController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Delete(':id')
   deleteExam(@Param('id') id: string, @Req() req) {
     return this.examsService.deleteExam(+id, req.user as TAuthUser);
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('results')
   getExamResults(@Query() query: FetchExamResultsDto) {
     return this.examsService.getExamResults(query);
   }
 
   @ApiOperation({
-    summary: `${UserRole.MENTOR}`,
+    summary: `${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.MENTOR])
+  @Roles([UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Get('results/lesson-group/:id')
   getGroupExamResults(
     @Param('id') id: string,

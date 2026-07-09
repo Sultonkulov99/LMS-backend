@@ -37,22 +37,22 @@ export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
 
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('single/:lessonId')
   getSingleLesson(@Param('lessonId') id: string) {
     return this.lessonsService.getSingleLesson(id);
   }
 
   @ApiOperation({
-    summary: `${UserRole.STUDENT}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
-  @Roles([UserRole.STUDENT])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Put('view/:lessonId')
   updateLessonView(
     @Param('lessonId') id: string,
@@ -67,11 +67,11 @@ export class LessonsController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Get('detail/:id')
   getDetail(@Param('id') id: string, @Request() req) {
     const user = req.user as TAuthUser;
@@ -79,11 +79,11 @@ export class LessonsController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
   @Post('create')
@@ -104,11 +104,11 @@ export class LessonsController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video'))
   @Patch(':id')
@@ -131,11 +131,11 @@ export class LessonsController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.MENTOR])
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Delete(':id')
   deleteLesson(@Param('id') id: string, @Request() req) {
     const user = req.user as TAuthUser;
