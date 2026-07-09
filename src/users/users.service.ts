@@ -12,6 +12,7 @@ import { PromiseManyData } from '../types/common/data-response';
 import { CreateAssistantDto } from './dto/create-assistant.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { Status } from '@prisma/client';
+import { UpdateMentorDto } from './dto/update-mentor.dto';
 
 @Injectable()
 export class UsersService {
@@ -30,6 +31,21 @@ export class UsersService {
   private async checkUserPhoneNotExists(phone: string) {
     const user = await this.prisma.user.findUnique({
       where: { phone },
+    });
+    if (user) {
+      throw new BadRequestException(
+        'User with given phone number is already exists',
+      );
+    }
+    return phone;
+  }
+
+  private async checkUserPhoneForUpdate(phone: string, id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        phone,
+        NOT: { id }
+      },
     });
     if (user) {
       throw new BadRequestException(
@@ -184,6 +200,45 @@ export class UsersService {
         },
       },
       select: this.selectUser,
+    });
+  }
+
+  async updateMentor(payload: UpdateMentorDto, id: number) {
+    const mentor = await this.prisma.user.findUnique({
+      where: { id, role: UserRole.MENTOR, status: Status.ACTIVE },
+      select: {
+        ...this.selectUser,
+        mentorProfile: true,
+        _count: {
+          select: {
+            courses: true,
+          },
+        },
+      },
+    });
+
+    if (!mentor) {
+      throw new NotFoundException('Mentor not found');
+    }
+
+    await this.checkUserPhoneForUpdate(payload.phone, id);
+    const { phone, fullName, password } = payload;
+    delete payload.phone;
+    delete payload.fullName;
+    delete payload.password;
+    const hashedPassword = await hashPassword(password);
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        phone: phone,
+        fullName: fullName,
+        password: hashedPassword,
+        role: UserRole.MENTOR,
+        mentorProfile: {
+          update: payload,
+        },
+      },
+      select: { ...this.selectUser, mentorProfile: true },
     });
   }
 
