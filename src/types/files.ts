@@ -5,7 +5,7 @@ export enum EFileType {
 }
 
 export interface ValidateFileOptions {
-  size: number;
+  size?: number;
   type?: 'image' | 'video';
   required?: boolean;
 }
