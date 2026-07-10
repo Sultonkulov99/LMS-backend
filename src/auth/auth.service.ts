@@ -75,6 +75,8 @@ export class AuthService {
     const user = await this.validateUser(data.phone, data.password);
     return {
       ...await this.generateTokens(user),
+      image: user.image,
+      fullName: user.fullName,
       role:user.role
     };
   }

@@ -63,11 +63,11 @@ export class CoursesService {
         categoryId: +query?.category_id,
       });
     }
-    if (query?.published) {
-      Object.assign(pquery.where, {
-        published: query.published === 'true',
-      });
-    }
+    // if (query?.published) {
+    //   Object.assign(pquery.where, {
+    //     published: query.published === 'true',
+    //   });
+    // }
     if (query?.mentor_id) {
       Object.assign(pquery.where, {
         mentorId: +query.mentor_id,
@@ -102,7 +102,19 @@ export class CoursesService {
               id: true,
               image: true,
               fullName: true,
+              mentorProfile: true
             },
+          },
+          assistants: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  image: true,
+                  fullName: true,
+                }
+              }
+            }
           },
           _count: {
             select: {
@@ -118,7 +130,7 @@ export class CoursesService {
 
   async getCourse(id: string) {
     const course = await this.prisma.course.findUnique({
-      where: { id, published: true, },
+      where: { id },
       select: {
         ...this.selectManyCourse,
         about: true,
@@ -138,7 +150,6 @@ export class CoursesService {
                 id: true,
                 fullName: true,
                 image: true,
-                mentorProfile: true,
               }
             }
           }

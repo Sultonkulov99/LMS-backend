@@ -198,8 +198,8 @@ export class CoursesController {
     @Request() req,
     @UploadedFiles(
       new FilesValidation({
-        banner: { size: 1, type: 'image' },
-        introVideo: { size: 100, type: 'video' },
+        banner: { size: 20 * 1024 * 1024, type: 'image' },
+        introVideo: { size: 50 * 1024 * 1024, type: 'video' },
       }),
     )
     files: {
