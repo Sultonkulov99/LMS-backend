@@ -23,14 +23,14 @@ export class ProfileService {
     private filesService: FilesService,
   ) {}
 
-  getLastActivity(authUser: TAuthUser) {
-    return this.prisma.lastActivity.findUnique({
+  async getLastActivity(authUser: TAuthUser) {
+    return await this.prisma.lastActivity.findUnique({
       where: { userId: authUser.id },
     });
   }
 
-  setLastActivity(payload: SetLastActivityDto, authUser: TAuthUser) {
-    return this.prisma.lastActivity.update({
+  async setLastActivity(payload: SetLastActivityDto, authUser: TAuthUser) {
+    return await this.prisma.lastActivity.update({
       where: {
         userId: authUser.id,
       },

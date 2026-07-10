@@ -23,6 +23,7 @@ import { FetchUsersDto } from './dto/fetch-users.dto';
 import { CreateAssistantDto } from './dto/create-assistant.dto';
 import { FetchUserByPhoneParamsDto } from './dto/fetch-user-by-phone.dto';
 import { UpdateMentorDto } from './dto/update-mentor.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('Users')
 @Controller('api/users')
@@ -115,6 +116,30 @@ export class UsersController {
   @Patch('mentor/:id')
   updateMentor(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateMentorDto) {
     return this.usersService.updateMentor(payload, id);
+    
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.MENTOR])
+  @Patch('student/:id')
+  updateStudent(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateUserDto) {
+    return this.usersService.updateStudent(payload, id);
+    
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.ASSISTANT}, ${UserRole.SUPER_ADMIN}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN, UserRole.ASSISTANT])
+  @Patch('assistant/:id')
+  updateAssistant(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateUserDto) {
+    return this.usersService.updateAsistent(payload, id);
     
   }
 

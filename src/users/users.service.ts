@@ -13,6 +13,7 @@ import { CreateAssistantDto } from './dto/create-assistant.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { Status } from '@prisma/client';
 import { UpdateMentorDto } from './dto/update-mentor.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +27,7 @@ export class UsersService {
     status: true,
     image: true,
     courses: true,
+    assignedCourses: true,
     createdAt: true,
   };
 
@@ -210,6 +212,7 @@ export class UsersService {
       where: { id, role: UserRole.MENTOR, status: Status.ACTIVE },
       select: {
         ...this.selectUser,
+        password: true,
         mentorProfile: true,
         _count: {
           select: {
@@ -223,12 +226,20 @@ export class UsersService {
       throw new NotFoundException('Mentor not found');
     }
 
-    await this.checkUserPhoneForUpdate(payload.phone, id);
+    if(payload?.phone) {
+      await this.checkUserPhoneForUpdate(payload.phone, id);
+    }
+
     const { phone, fullName, password } = payload;
+    let hashedPassword = mentor.password
     delete payload.phone;
     delete payload.fullName;
     delete payload.password;
-    const hashedPassword = await hashPassword(password);
+
+    if(payload?.password) {
+      hashedPassword = await hashPassword(password);
+    }
+
     return this.prisma.user.update({
       where: { id },
       data: {
@@ -241,6 +252,95 @@ export class UsersService {
         },
       },
       select: { ...this.selectUser, mentorProfile: true },
+    });
+  }
+
+  async updateAsistent(payload: UpdateUserDto, id: number) {
+    const assistant = await this.prisma.user.findUnique({
+      where: { id, role: UserRole.ASSISTANT, status: Status.ACTIVE },
+      select: {
+        ...this.selectUser,
+        password: true,
+        mentorProfile: true,
+        _count: {
+          select: {
+            courses: true,
+          },
+        },
+      },
+    });
+
+    if (!assistant) {
+      throw new NotFoundException('Mentor not found');
+    }
+
+    if(payload?.phone) {
+      await this.checkUserPhoneForUpdate(payload.phone, id);
+    }
+
+    const { phone, fullName, password } = payload;
+    let hashedPassword = assistant.password
+    delete payload.phone;
+    delete payload.fullName;
+    delete payload.password;
+
+    if(payload?.password) {
+      hashedPassword = await hashPassword(password);
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        phone: phone,
+        fullName: fullName,
+        password: hashedPassword,
+        role: UserRole.ASSISTANT,
+      },
+      select: { ...this.selectUser, assignedCourses: true },
+    });
+  }
+
+  async updateStudent(payload: UpdateUserDto, id: number) {
+    const student = await this.prisma.user.findUnique({
+      where: { id, role: UserRole.STUDENT, status: Status.ACTIVE },
+      select: {
+        ...this.selectUser,
+        password: true,
+        _count: {
+          select: {
+            courses: true,
+          },
+        },
+      },
+    });
+
+    if (!student) {
+      throw new NotFoundException('Mentor not found');
+    }
+
+     if(payload?.phone) {
+      await this.checkUserPhoneForUpdate(payload.phone, id);
+    }
+
+    const { phone, fullName, password } = payload;
+    let hashedPassword = student.password
+    delete payload.phone;
+    delete payload.fullName;
+    delete payload.password;
+
+    if(payload?.password) {
+      hashedPassword = await hashPassword(password);
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        phone: phone,
+        fullName: fullName,
+        password: hashedPassword,
+        role: UserRole.STUDENT,
+      },
+      select: { ...this.selectUser },
     });
   }
 

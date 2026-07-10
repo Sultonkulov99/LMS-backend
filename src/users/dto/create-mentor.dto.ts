@@ -1,9 +1,7 @@
-import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsMobilePhone,
   IsNumber,
   IsOptional,
-  IsString,
   IsUrl,
   Max,
   MaxLength,
