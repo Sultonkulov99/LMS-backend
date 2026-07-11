@@ -28,6 +28,24 @@ export class UsersService {
     image: true,
     courses: true,
     assignedCourses: true,
+    purchasedCourses: {
+      select: {
+        status: true,
+        amount: true,
+        course: {
+          select: {
+            id: true,
+            name: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }
+        }
+      }
+    },
     createdAt: true,
   };
 
@@ -240,7 +258,7 @@ export class UsersService {
       throw new NotFoundException('Mentor not found');
     }
 
-    if(payload?.phone) {
+    if (payload?.phone) {
       await this.checkUserPhoneForUpdate(payload.phone, id);
     }
 
@@ -250,7 +268,7 @@ export class UsersService {
     delete payload.fullName;
     delete payload.password;
 
-    if(payload?.password) {
+    if (payload?.password) {
       hashedPassword = await hashPassword(password);
     }
 
@@ -288,7 +306,7 @@ export class UsersService {
       throw new NotFoundException('Mentor not found');
     }
 
-    if(payload?.phone) {
+    if (payload?.phone) {
       await this.checkUserPhoneForUpdate(payload.phone, id);
     }
 
@@ -298,7 +316,7 @@ export class UsersService {
     delete payload.fullName;
     delete payload.password;
 
-    if(payload?.password) {
+    if (payload?.password) {
       hashedPassword = await hashPassword(password);
     }
 
@@ -332,7 +350,7 @@ export class UsersService {
       throw new NotFoundException('Mentor not found');
     }
 
-     if(payload?.phone) {
+    if (payload?.phone) {
       await this.checkUserPhoneForUpdate(payload.phone, id);
     }
 
@@ -342,7 +360,7 @@ export class UsersService {
     delete payload.fullName;
     delete payload.password;
 
-    if(payload?.password) {
+    if (payload?.password) {
       hashedPassword = await hashPassword(password);
     }
 
