@@ -103,17 +103,17 @@ export class AuthService {
       );
     }
 
-    // const redisKey = `reg_${phone}`;
-    // const storedOtp = await this.redisService.get(redisKey);
-    // if (!storedOtp || storedOtp !== payload.otp) {
-    //   throw new HttpException(
-    //     'Noto\'g\'ri yoki muddati o\'tgan tasdiqlash kodi',
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
+    const redisKey = `reg_${phone}`;
+    const storedOtp = await this.redisService.get(redisKey);
+    if (!storedOtp || storedOtp !== payload.otp) {
+      throw new HttpException(
+        'Noto\'g\'ri yoki muddati o\'tgan tasdiqlash kodi',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-    // // Delete OTP after successful verification to prevent reuse
-    // await this.redisService.del(redisKey);
+    // Delete OTP after successful verification to prevent reuse
+    await this.redisService.del(redisKey);
 
     const hashedPassword = await hashPassword(payload.password);
     const user = await this.prisma.user.create({
