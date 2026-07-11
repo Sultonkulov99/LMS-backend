@@ -61,7 +61,7 @@ export class LessonFilesController {
   @Post()
   createFiles(
     @Body() payload: CreateLessonFileDto,
-    @UploadedFiles(new FilesValidation({ files: { size: 50, required: true } }))
+    @UploadedFiles(new FilesValidation({ files: { required: true } }))
     files: { files: Express.Multer.File[] },
     @Request() req,
   ) {

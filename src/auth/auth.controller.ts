@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
@@ -23,8 +23,8 @@ export class AuthController {
     summary: 'OTP verification',
   })
   @Post('register')
-  register(@Body() payload: RegisterDto) {
-    return this.authService.register(payload);
+  register(@Body() payload: RegisterDto, @Query('courseId') courseId: string) {
+    return this.authService.register(payload, courseId);
   }
 
   @Post('refresh-token')

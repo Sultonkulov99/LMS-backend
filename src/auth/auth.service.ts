@@ -10,12 +10,13 @@ import { JWTAccessOptions, JWTRefreshOptions } from '../global/config/jwt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '@prisma/client';
-import { UserRole } from '../types/user';
+import { TAuthUser, UserRole } from '../types/user';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { RedisService } from '../global/redis/redis.service';
 import { normalizePhoneNumber } from '../utils/phone';
+import { PurchasedCoursesService } from 'src/purchased-courses/purchased-courses.service';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,8 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private redisService: RedisService,
-  ) {}
+    private purchasedCourseService: PurchasedCoursesService,
+  ) { }
 
   private async generateTokens(
     user: Pick<User, 'id' | 'phone'>,
@@ -58,7 +60,7 @@ export class AuthService {
   async validateUser(phone: string, password: string) {
     const normalizedPhone = normalizePhoneNumber(phone) || phone;
     const user = await this.prisma.user.findUnique({
-      where: { 
+      where: {
         phone: normalizedPhone,
       },
     });
@@ -77,11 +79,11 @@ export class AuthService {
       ...await this.generateTokens(user),
       image: user.image,
       fullName: user.fullName,
-      role:user.role
+      role: user.role
     };
   }
 
-  async register(payload: RegisterDto) {
+  async register(payload: RegisterDto, courseId: string) {
     const phone = normalizePhoneNumber(payload.phone);
     if (!phone) {
       throw new HttpException(
@@ -131,6 +133,15 @@ export class AuthService {
         userId: user.id,
       },
     });
+
+    const { course } = await this.purchasedCourseService.checkCoursePurchased(courseId, user.id);
+    await this.prisma.purchasedCourse.create({
+      data: {
+        courseId,
+        userId: user.id,
+        amount: course.price,
+      }
+    })
     return this.generateTokens(user);
   }
 

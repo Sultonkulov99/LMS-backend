@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsJSON, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class CreateLessonFileDto {
   @ApiProperty({
@@ -16,10 +17,18 @@ export class CreateLessonFileDto {
 
   @ApiProperty({
     required: false,
-    type: 'json',
+    type: 'string',
     example: '["Just a first note for first file"]',
   })
-  @IsJSON()
   @IsOptional()
-  notes?: string;
+  @IsArray()
+  @Transform(({ value }) => {
+    try {
+      const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  })
+  notes?: string[];
 }

@@ -7,10 +7,13 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JWTAccessOptions } from '../global/config/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaService } from 'src/core/database/prisma.service';
+import { PurchasedCoursesModule } from 'src/purchased-courses/purchased-courses.module';
+import { PurchasedCoursesService } from 'src/purchased-courses/purchased-courses.service';
 
 @Module({
   imports: [
     PassportModule,
+    PurchasedCoursesModule,
     JwtModule.register({
       secret: JWTAccessOptions.secret,
       signOptions: {
@@ -23,6 +26,7 @@ import { PrismaService } from 'src/core/database/prisma.service';
     AuthService,
     PrismaService,
     LocalStrategy,
+    PurchasedCoursesService,
     JwtStrategy,
     JwtService,
   ],

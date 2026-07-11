@@ -12,11 +12,11 @@ export class LessonFilesService {
     private prisma: PrismaService,
     private lessonsService: LessonsService,
     private filesService: FilesService,
-  ) {}
+  ) { }
 
   async getLessonFiles(lessonId: string, authUser: TAuthUser) {
     await this.lessonsService.getDetail(lessonId, authUser);
-    return this.prisma.lessonFile.findMany({
+    return await this.prisma.lessonFile.findMany({
       where: {
         lessonId,
       },
@@ -34,7 +34,8 @@ export class LessonFilesService {
       payload.lessonId,
       authUser,
     );
-    const notes = payload?.notes ? JSON.parse(payload.notes) : [];
+
+    const notes = payload?.notes ?? [];
     const operations = [];
     payload.files.forEach((file: Express.Multer.File) => {
       operations.push(

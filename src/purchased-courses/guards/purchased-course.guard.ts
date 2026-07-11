@@ -28,9 +28,7 @@ export class PurchasedCourseGuard implements CanActivate {
     if ('lessonGroupId' in request?.params) {
       lessonGroupId = +request.params.lessonGroupId;
     }
-    if ('lessonGroupId' in request?.body) {
-      lessonGroupId = +request.body.lessonGroupId;
-    }
+    
     const where = {
       lessonGroups: {
         some: {
