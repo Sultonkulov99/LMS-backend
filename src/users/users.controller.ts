@@ -30,6 +30,11 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
+  @Get('mentors')
+  getMentors() {
+    return this.usersService.getMentors();
+  }
+
   @ApiOperation({
     summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
@@ -116,7 +121,7 @@ export class UsersController {
   @Patch('mentor/:id')
   updateMentor(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateMentorDto) {
     return this.usersService.updateMentor(payload, id);
-    
+
   }
 
   @ApiOperation({
@@ -128,7 +133,7 @@ export class UsersController {
   @Patch('student/:id')
   updateStudent(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateUserDto) {
     return this.usersService.updateStudent(payload, id);
-    
+
   }
 
   @ApiOperation({
@@ -140,11 +145,11 @@ export class UsersController {
   @Patch('assistant/:id')
   updateAssistant(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateUserDto) {
     return this.usersService.updateAsistent(payload, id);
-    
+
   }
 
   @ApiOperation({
-    summary:`${UserRole.ADMIN},  ${UserRole.SUPER_ADMIN}`
+    summary: `${UserRole.ADMIN},  ${UserRole.SUPER_ADMIN}`
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)

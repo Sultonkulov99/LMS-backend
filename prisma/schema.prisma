@@ -49,6 +49,11 @@ enum Status {
   FREEZE
 }
 
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+}
+
 // Models 
 model User {
   id                  Int                  @id @default(autoincrement())
@@ -109,9 +114,9 @@ model LastActivity {
 }
 
 model CourseCategory {
-  id     Int    @id @default(autoincrement())
-  name   String
-  status Status @default(ACTIVE)
+  id        Int      @id @default(autoincrement())
+  name      String
+  status    Status   @default(ACTIVE)
   createdAt DateTime @default(now())
   courses   Course[]
 }
@@ -140,12 +145,13 @@ model Course {
 
 model PurchasedCourse {
   courseId    String
-  course      Course   @relation(references: [id], fields: [courseId], onDelete: Cascade)
+  course      Course        @relation(references: [id], fields: [courseId], onDelete: Cascade)
   userId      Int
-  user        User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  user        User          @relation(references: [id], fields: [userId], onDelete: Cascade)
   amount      Decimal?
-  paidVia     PaidVia
-  purchasedAt DateTime @default(now())
+  paidVia     PaidVia?
+  status      PaymentStatus @default(PENDING)
+  purchasedAt DateTime      @default(now())
 
   @@id([userId, courseId])
 }
@@ -173,18 +179,18 @@ model LessonGroup {
 }
 
 model Lesson {
-  id          String       @id @default(uuid())
-  name        String
-  about       String
-  video       String?
+  id           String       @id @default(uuid())
+  name         String
+  about        String
+  video        String?
   youtube_link String?
-  groupId     Int
-  group       LessonGroup  @relation(references: [id], fields: [groupId])
-  updatedAt   DateTime?
-  createdAt   DateTime     @default(now())
-  lessonFiles LessonFile[]
-  homework    Homework?
-  views       LessonView[]
+  groupId      Int
+  group        LessonGroup  @relation(references: [id], fields: [groupId])
+  updatedAt    DateTime?
+  createdAt    DateTime     @default(now())
+  lessonFiles  LessonFile[]
+  homework     Homework?
+  views        LessonView[]
 }
 
 model LessonView {

@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   Request,
   UseGuards,
@@ -20,6 +21,7 @@ import {
 } from './dto/purchase-course.dto';
 import { FetchPurchasedCoursesDto } from './dto/fetch-purchased-courses.dto';
 import { FetchCourseStudentsDto } from './dto/fetch-course-students.dto';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @ApiTags('Purchased Courses')
 @Controller('api/purchased-courses')
@@ -81,6 +83,19 @@ export class PurchasedCoursesController {
       query,
       req.user as TAuthUser,
     );
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
+  @Put('status')
+  updateStatus(
+    @Body() payload: UpdateStatusDto
+  ) {
+    return this.purchasedCoursesService.updateStatus(payload.courseId, payload.userId);
   }
 
   @ApiOperation({

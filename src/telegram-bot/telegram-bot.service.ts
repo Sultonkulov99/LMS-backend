@@ -10,7 +10,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
   private isPolling = false;
   private offset = 0;
 
-  constructor(private readonly redisService: RedisService) {}
+  constructor(private readonly redisService: RedisService) { }
 
   async onModuleInit() {
     if (!this.token) {
@@ -42,7 +42,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
           this.offset = update.update_id + 1;
           await this.handleUpdate(update);
         }
-      } catch (error) {
+      } catch (error: any) {
         // If there's an error (e.g. timeout or network issue), log it and wait before retrying
         console.error('Error in Telegram bot polling:', error.message);
         await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -76,15 +76,8 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
         return;
       }
 
-      // Check if text is a phone number
-      const phone = normalizePhoneNumber(text);
-      if (phone) {
-        await this.generateAndSendOtp(chatId, phone);
-        return;
-      }
-
-      // Default reply
-      await this.sendMessage(chatId, "Iltimos, pastdagi tugmani bosib telefon raqamingizni yuboring yoki '+998*********' ko'rinishida yozing.", {
+      await this.sendMessage(chatId, "❌ Kechirasiz, raqamni qo'lda yozib yuborish mumkin emas.\n" +
+        "Iltimos, pastdagi **'📱 Telefon raqamni yuborish'** tugmasini bosing!", {
         reply_markup: {
           keyboard: [
             [
@@ -125,7 +118,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
   private async generateAndSendOtp(chatId: number, phone: string) {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const redisKey = `reg_${phone}`;
-    
+
     // Save to Redis with 5 minutes (300 seconds) expiration
     await this.redisService.set(redisKey, otp, 300);
 
@@ -140,7 +133,7 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
         text,
         ...extra,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error sending message to chatId ${chatId}:`, error.message);
     }
   }

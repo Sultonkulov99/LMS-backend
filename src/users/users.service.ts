@@ -110,6 +110,20 @@ export class UsersService {
     return user;
   }
 
+  async getMentors() {
+    const mentors = await this.prisma.user.findMany({
+      where: { role: UserRole.MENTOR, status: Status.ACTIVE },
+      select: {
+        id: true,
+        image: true,
+        fullName: true,
+        mentorProfile: true,
+      },
+    });
+
+    return mentors
+  }
+
   async getMentor(id: number) {
     const mentor = await this.prisma.user.findUnique({
       where: { id, role: UserRole.MENTOR, status: Status.ACTIVE },

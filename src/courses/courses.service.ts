@@ -102,7 +102,14 @@ export class CoursesService {
               id: true,
               image: true,
               fullName: true,
-              mentorProfile: true
+              mentorProfile: true,
+              _count: {
+                select: {
+                  courses: true,
+                  views: true,
+
+                }
+              }
             },
           },
           assistants: {
@@ -141,6 +148,13 @@ export class CoursesService {
             fullName: true,
             image: true,
             mentorProfile: true,
+            _count: {
+              select: {
+                courses: true,
+                views: true,
+
+              }
+            }
           },
         },
         assistants: {

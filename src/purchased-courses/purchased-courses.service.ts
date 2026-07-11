@@ -6,13 +6,13 @@ import {
 import { TAuthUser, UserRole } from '../types/user';
 import { FetchPurchasedCoursesDto } from './dto/fetch-purchased-courses.dto';
 import { PromiseManyData } from '../types/common/data-response';
-import { Course, PaidVia, PurchasedCourse } from '@prisma/client';
+import { Course, PaidVia, PaymentStatus, PurchasedCourse } from '@prisma/client';
 import { FetchCourseStudentsDto } from './dto/fetch-course-students.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class PurchasedCoursesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async getMyCourses(
     query: FetchPurchasedCoursesDto,
@@ -154,7 +154,7 @@ export class PurchasedCoursesService {
     return { total, data };
   }
 
-  private async checkCoursePurchased(courseId: string, userId: number) {
+  async checkCoursePurchased(courseId: string, userId: number) {
     const course = await this.prisma.course.findUnique({
       where: {
         id: courseId,
@@ -216,5 +216,33 @@ export class PurchasedCoursesService {
         paidVia: PaidVia.CASH,
       },
     });
+  }
+
+  async updateStatus(courseId: string, userId: number) {
+    const purchased = await this.prisma.purchasedCourse.findFirst({
+      where: {
+        courseId: courseId,
+        userId: userId,
+      },
+    });
+    if (!purchased) {
+      throw new HttpException(
+        'This course has not purchased',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.prisma.purchasedCourse.update({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId,
+        },
+      },
+      data: { status: PaymentStatus.COMPLETED },
+    });
+
+    return {
+      message: "Status has successfully changed"
+    }
   }
 }
