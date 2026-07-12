@@ -93,14 +93,14 @@ export class HomeworkController {
   @UseInterceptors(FileInterceptor('file'))
   @Patch('update/:id')
   updateHomework(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() payload: UpdateHomeworkDto,
     @UploadedFile('file') file: Express.Multer.File,
     @Req() req,
   ) {
     payload.file = file;
     return this.homeworkService.updateHomework(
-      +id,
+      id,
       payload,
       req.user as TAuthUser,
     );
@@ -111,8 +111,8 @@ export class HomeworkController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Delete('delete/:id')
-  deleteHomework(@Param('id') id: string, @Req() req) {
-    return this.homeworkService.deleteHomework(+id, req.user as TAuthUser);
+  deleteHomework(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.homeworkService.deleteHomework(id, req.user as TAuthUser);
   }
 
   // Submissions
@@ -178,9 +178,9 @@ export class HomeworkController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
   @Get('submissions/single/:id')
-  getHomeworkSubmission(@Param('id') id: string, @Req() req) {
+  getHomeworkSubmission(@Param('id', ParseIntPipe) id: number, @Req() req) {
     return this.homeworkService.getHomeworkSubmission(
-      +id,
+      id,
       req.user as TAuthUser,
     );
   }

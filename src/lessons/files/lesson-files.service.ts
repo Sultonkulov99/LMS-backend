@@ -24,6 +24,11 @@ export class LessonFilesService {
         id: true,
         file: true,
         note: true,
+        lesson: {
+          select: {
+            name: true,
+          }
+        },
         createdAt: true,
       },
     });
@@ -35,7 +40,7 @@ export class LessonFilesService {
       authUser,
     );
 
-    const notes = payload?.notes ?? [];
+    const notes = payload?.notes?.toString().split(',') ?? [];
     const operations = [];
     payload.files.forEach((file: Express.Multer.File) => {
       operations.push(

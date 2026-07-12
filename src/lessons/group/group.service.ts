@@ -63,6 +63,10 @@ export class LessonGroupService {
   async getSingle(id: number, authUser: TAuthUser) {
     const args = {
       where: { id },
+      select: {
+        id: true,
+        lessons: true
+      }
     };
     if (authUser.role === UserRole.MENTOR) {
       Object.assign(args.where, {

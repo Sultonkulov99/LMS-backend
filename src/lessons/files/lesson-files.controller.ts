@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Request,
   UploadedFiles,
@@ -13,6 +14,7 @@ import {
 import { LessonFilesService } from './lesson-files.service';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiOperation,
   ApiTags,
@@ -28,7 +30,7 @@ import { FilesValidation } from '../../files/validation/files-validation';
 @ApiTags('Lesson Files')
 @Controller('api/lesson-files')
 export class LessonFilesController {
-  constructor(private lessonFilesService: LessonFilesService) {}
+  constructor(private lessonFilesService: LessonFilesService) { }
 
   @ApiOperation({
     summary: `${UserRole.ADMIN}, ${UserRole.MENTOR}, ${UserRole.SUPER_ADMIN}`,
@@ -82,8 +84,8 @@ export class LessonFilesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Delete(':id')
-  deleteFile(@Param('id') id: string, @Request() req) {
+  deleteFile(@Param('id', ParseIntPipe) id: number, @Request() req) {
     const user = req.user as TAuthUser;
-    return this.lessonFilesService.deleteFile(+id, user);
+    return this.lessonFilesService.deleteFile(id, user);
   }
 }

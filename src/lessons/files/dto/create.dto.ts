@@ -5,9 +5,13 @@ import { IsArray, IsOptional, IsString } from 'class-validator';
 export class CreateLessonFileDto {
   @ApiProperty({
     required: true,
-    type: 'string',
     nullable: false,
-    format: 'binary',
+    type: 'array',
+    items: { 
+      type: 'string', 
+      format: 'binary' 
+    },
+    description: 'Bitta yoki bir nechta fayllarni tanlang',
   })
   files: any | Express.Multer.File[];
 
