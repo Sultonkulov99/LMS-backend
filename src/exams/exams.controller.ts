@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -37,8 +38,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
   @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('lesson-group/:lessonGroupId')
-  getGroupExams(@Param('lessonGroupId') id: string, @Req() req) {
-    return this.examsService.getGroupExams(+id, req.user as TAuthUser);
+  getGroupExams(@Param('lessonGroupId', ParseIntPipe) id: number, @Req() req) {
+    return this.examsService.getGroupExams(id, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -59,8 +60,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('lesson-group/details/:id')
-  getGroupExamsAdmin(@Param('id') id: string, @Req() req) {
-    return this.examsService.getGroupExams(+id, req.user as TAuthUser, true);
+  getGroupExamsAdmin(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.examsService.getGroupExams(id, req.user as TAuthUser, true);
   }
 
   @ApiOperation({
@@ -70,8 +71,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Get('detail/:id')
-  getDetail(@Param('id') id: string, @Req() req) {
-    return this.examsService.getDetail(+id, req.user as TAuthUser);
+  getDetail(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.examsService.getDetail(id, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -104,11 +105,11 @@ export class ExamsController {
   @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Patch('update/:id')
   updateExam(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() payload: UpdateExamDto,
     @Req() req,
   ) {
-    return this.examsService.updateExam(+id, payload, req.user as TAuthUser);
+    return this.examsService.updateExam(id, payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -118,8 +119,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Delete(':id')
-  deleteExam(@Param('id') id: string, @Req() req) {
-    return this.examsService.deleteExam(+id, req.user as TAuthUser);
+  deleteExam(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.examsService.deleteExam(id, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -141,12 +142,12 @@ export class ExamsController {
   @Roles([UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Get('results/lesson-group/:id')
   getGroupExamResults(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Query() query: FetchGroupExamResultsDto,
     @Req() req,
   ) {
     return this.examsService.getGroupExamResults(
-      +id,
+      id,
       query,
       req.user as TAuthUser,
     );

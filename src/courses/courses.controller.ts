@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -65,8 +66,8 @@ export class CoursesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('mentor/:id')
-  getUserCourses(@Param('id') id: string, @Query() query: FetchUserCourses) {
-    return this.coursesService.getUserCourses(query, +id);
+  getUserCourses(@Param('id', ParseIntPipe) id: number, @Query() query: FetchUserCourses) {
+    return this.coursesService.getUserCourses(query, id);
   }
 
   @ApiOperation({

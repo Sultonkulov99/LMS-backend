@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -52,9 +53,9 @@ export class LessonGroupController {
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
-  getSingle(@Param('id') id: string, @Request() req) {
+  getSingle(@Param('id', ParseIntPipe) id: number, @Request() req) {
     const authUser = req.user as TAuthUser;
-    return this.groupService.getSingle(+id, authUser);
+    return this.groupService.getSingle(id, authUser);
   }
 
   @ApiOperation({
@@ -78,11 +79,11 @@ export class LessonGroupController {
   @Put(':id')
   updateCategory(
     @Body() payload: UpdateLessonGroupDto,
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Request() req,
   ) {
     const authUser = req.user as TAuthUser;
-    return this.groupService.updateLessonGroup(+id, payload, authUser);
+    return this.groupService.updateLessonGroup(id, payload, authUser);
   }
 
   @ApiOperation({
@@ -92,8 +93,8 @@ export class LessonGroupController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Delete(':id')
-  deleteCategory(@Param('id') id: string, @Request() req) {
+  deleteCategory(@Param('id', ParseIntPipe) id: number, @Request() req) {
     const authUser = req.user as TAuthUser;
-    return this.groupService.deleteCategory(+id, authUser);
+    return this.groupService.deleteCategory(id, authUser);
   }
 }

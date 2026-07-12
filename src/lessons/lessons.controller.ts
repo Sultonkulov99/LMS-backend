@@ -89,7 +89,7 @@ export class LessonsController {
   @Post('create')
   createLesson(
     @Body() payload: CreateLessonDto,
-    @UploadedFile(validateFile({ required: false, size: 500, type: 'video' }))
+    @UploadedFile(validateFile({ required: false, type: 'video' }))
     video: Express.Multer.File,
     @Request() req,
   ) {
