@@ -30,7 +30,7 @@ enum PaidVia {
   CASH
 }
 
-enum ExamAnswer {
+enum TestAnswer {
   variantA
   variantB
   variantC
@@ -67,7 +67,7 @@ model User {
   courses             Course[]
   purchasedCourses    PurchasedCourse[]
   rates               Rating[]
-  examResults         ExamResult[]
+  testResults         TestResult[]
   mentorProfile       MentorProfile?
   homeworkSubmissions HomeworkSubmission[]
   assignedCourses     AssignedCourse[]
@@ -189,8 +189,8 @@ model Lesson {
   lessonFiles  LessonFile[]
   homework     Homework?
   views        LessonView[]
-  exams        Exam[]
-  examResults  ExamResult[]
+  tests        Test[]
+  testResults  TestResult[]
 }
 
 model LessonView {
@@ -237,20 +237,20 @@ model HomeworkSubmission {
   createdAt  DateTime          @default(now())
 }
 
-model Exam {
+model Test {
   id        Int        @id @default(autoincrement())
   question  String
   variantA  String
   variantB  String
   variantC  String
   variantD  String
-  answer    ExamAnswer
+  answer    TestAnswer
   createdAt DateTime   @default(now())
   lessonId  String
   lessons   Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model ExamResult {
+model TestResult {
   id        Int      @id @default(autoincrement())
   lessonId  String
   lessons   Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)

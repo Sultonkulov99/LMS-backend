@@ -2,13 +2,12 @@ import { PaginationDto } from '../../global/dto/pagination.dto';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import {
   IsBooleanString,
-  IsDate,
   IsDateString,
   IsNumberString,
   IsOptional,
 } from 'class-validator';
 
-export class FetchExamResultsDto extends PaginationDto {
+export class FetchTestResultsDto extends PaginationDto {
   @ApiProperty({
     required: false,
   })
@@ -48,6 +47,6 @@ export class FetchExamResultsDto extends PaginationDto {
   date_to?: string;
 }
 
-export class FetchGroupExamResultsDto extends OmitType(FetchExamResultsDto, [
+export class FetchGroupTestResultsDto extends OmitType(FetchTestResultsDto, [
   'lesson_group_id',
 ]) {}

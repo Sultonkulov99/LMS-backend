@@ -11,25 +11,25 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ExamsService } from './exams.service';
+import { TestsService } from './tests.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TAuthUser, UserRole } from '../types/user';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../global/guards/roles.guard';
 import { Roles } from '../global/decorators/roles';
-import { CreateExamDto, CreateManyExamDto } from './dto/create-exam.dto';
-import { AnswerExamDto } from './dto/answer-exam.dto';
-import { UpdateExamDto } from './dto/update-exam.dto';
+import { CreateTestDto, CreateManyTestDto } from './dto/create-test.dto';
+import { AnswerTestDto } from './dto/answer-test.dto';
+import { UpdateTestDto } from './dto/update-test.dto';
 import {
-  FetchExamResultsDto,
-  FetchGroupExamResultsDto,
-} from './dto/fetch-exam-results.dto';
+  FetchTestResultsDto,
+  FetchGroupTestResultsDto,
+} from './dto/fetch-test-results.dto';
 import { PurchasedCourseGuard } from '../purchased-courses/guards/purchased-course.guard';
 
-@ApiTags('Exams')
-@Controller('api/exams')
-export class ExamsController {
-  constructor(private readonly examsService: ExamsService) {}
+@ApiTags('Tests')
+@Controller('api/tests')
+export class TestsController {
+  constructor(private readonly testsService: TestsService) {}
 
   @ApiOperation({
     summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
@@ -38,8 +38,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
   @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('lesson/:lessonId')
-  getLessonExams(@Param('lessonId') id: string, @Req() req) {
-    return this.examsService.getGroupExams(id, req.user as TAuthUser);
+  getLessonTests(@Param('lessonId') id: string, @Req() req) {
+    return this.testsService.getGroupTests(id, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -49,8 +49,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
   @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Post('pass')
-  passExam(@Body() payload: AnswerExamDto, @Req() req) {
-    return this.examsService.passExam(payload, req.user as TAuthUser);
+  passTest(@Body() payload: AnswerTestDto, @Req() req) {
+    return this.testsService.passTest(payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -60,8 +60,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('lesson/details/:id')
-  getGroupExamsAdmin(@Param('id') id: string, @Req() req) {
-    return this.examsService.getGroupExams(id, req.user as TAuthUser, true);
+  getGroupTestsAdmin(@Param('id') id: string, @Req() req) {
+    return this.testsService.getGroupTests(id, req.user as TAuthUser, true);
   }
 
   @ApiOperation({
@@ -72,7 +72,7 @@ export class ExamsController {
   @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Get('detail/:id')
   getDetail(@Param('id', ParseIntPipe) id: number, @Req() req) {
-    return this.examsService.getDetail(id, req.user as TAuthUser);
+    return this.testsService.getDetail(id, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -82,8 +82,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Post('create')
-  createExam(@Body() payload: CreateExamDto, @Req() req) {
-    return this.examsService.createExam(payload, req.user as TAuthUser);
+  createTest(@Body() payload: CreateTestDto, @Req() req) {
+    return this.testsService.createTest(payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -93,8 +93,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Post('create/many')
-  createManyExam(@Body() payload: CreateManyExamDto, @Req() req) {
-    return this.examsService.createManyExam(payload, req.user as TAuthUser);
+  createManyTest(@Body() payload: CreateManyTestDto, @Req() req) {
+    return this.testsService.createManyTest(payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -104,12 +104,12 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Patch('update/:id')
-  updateExam(
+  updateTest(
     @Param('id', ParseIntPipe) id: number,
-    @Body() payload: UpdateExamDto,
+    @Body() payload: UpdateTestDto,
     @Req() req,
   ) {
-    return this.examsService.updateExam(id, payload, req.user as TAuthUser);
+    return this.testsService.updateTest(id, payload, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -119,8 +119,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Delete(':id')
-  deleteExam(@Param('id', ParseIntPipe) id: number, @Req() req) {
-    return this.examsService.deleteExam(id, req.user as TAuthUser);
+  deleteTest(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.testsService.deleteTest(id, req.user as TAuthUser);
   }
 
   @ApiOperation({
@@ -130,8 +130,8 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('results')
-  getExamResults(@Query() query: FetchExamResultsDto) {
-    return this.examsService.getExamResults(query);
+  getTestResults(@Query() query: FetchTestResultsDto) {
+    return this.testsService.getTestResults(query);
   }
 
   @ApiOperation({
@@ -141,12 +141,12 @@ export class ExamsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.SUPER_ADMIN])
   @Get('results/lesson/:id')
-  getGroupExamResults(
+  getGroupTestResults(
     @Param('id') id: string,
-    @Query() query: FetchGroupExamResultsDto,
+    @Query() query: FetchGroupTestResultsDto,
     @Req() req,
   ) {
-    return this.examsService.getGroupExamResults(
+    return this.testsService.getGroupTestResults(
       id,
       query,
       req.user as TAuthUser,

@@ -7,7 +7,7 @@ import { RolesGuard } from '../global/guards/roles.guard';
 import { Roles } from '../global/decorators/roles';
 import { UserRole } from '../types/user';
 import { PurchasedCourseGuard } from '../purchased-courses/guards/purchased-course.guard';
-import { LessonExamGuard } from '../exams/guards/lesson-exam.guard';
+import { LessonTestGuard } from '../tests/guards/lesson-test.guard';
 import { PrivateLessonFileParamDto } from './dto/private-lesson-file.dto';
 
 @ApiTags('Files')
@@ -22,7 +22,7 @@ export class FilesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonTestGuard)
   @Roles([UserRole.STUDENT, UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @ApiOperation({
     summary: `${UserRole.STUDENT}, ${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
@@ -34,7 +34,7 @@ export class FilesController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonTestGuard)
   @Roles([UserRole.STUDENT, UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @ApiOperation({
     summary: `${UserRole.STUDENT}, ${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,

@@ -5,50 +5,50 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateExamDto, CreateManyExamDto } from './dto/create-exam.dto';
+import { CreateTestDto, CreateManyTestDto } from './dto/create-test.dto';
 import { TAuthUser } from '../types/user';
-import { AnswerExamDto } from './dto/answer-exam.dto';
+import { AnswerTestDto } from './dto/answer-test.dto';
 import { getPastTime } from '../utils/time';
-import { UpdateExamDto } from './dto/update-exam.dto';
+import { UpdateTestDto } from './dto/update-test.dto';
 import { PromiseManyData } from '../types/common/data-response';
-import { ExamResult } from '@prisma/client';
+import { TestResult } from '@prisma/client';
 import {
-  FetchExamResultsDto,
-  FetchGroupExamResultsDto,
-} from './dto/fetch-exam-results.dto';
+  FetchTestResultsDto,
+  FetchGroupTestResultsDto,
+} from './dto/fetch-test-results.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { LessonsService } from 'src/lessons/lessons.service';
 
 @Injectable()
-export class ExamsService {
+export class TestsService {
   constructor(
     private prisma: PrismaService,
     private lessonService: LessonsService,
   ) {}
 
-  private async checkIsNotPassed(lessoId: string, authUser: TAuthUser) {
-    const passed = await this.prisma.examResult.findFirst({
+  private async checkIsNotPassed(lessonId: string, authUser: TAuthUser) {
+    const passed = await this.prisma.testResult.findFirst({
       where: {
-        lessonId: lessoId,
+        lessonId,
         userId: authUser.id,
         passed: true,
       },
     });
     if (passed) {
-      throw new BadRequestException('You already passed this exam');
+      throw new BadRequestException('You already passed this test');
     }
     return passed;
   }
 
-  async getGroupExams(lessonId: string, authUser: TAuthUser, admin?: boolean) {
+  async getGroupTests(lessonId: string, authUser: TAuthUser, admin?: boolean) {
     if (admin) {
       await this.lessonService.getSingleLesson(lessonId);
     } else {
       await this.checkIsNotPassed(lessonId, authUser);
     }
-    return this.prisma.exam.findMany({
+    return this.prisma.test.findMany({
       where: {
-        lessonId: lessonId,
+        lessonId,
       },
       select: {
         id: true,
@@ -63,9 +63,9 @@ export class ExamsService {
     });
   }
 
-  async passExam(payload: AnswerExamDto, authUser: TAuthUser) {
+  async passTest(payload: AnswerTestDto, authUser: TAuthUser) {
     await this.checkIsNotPassed(payload.lessonId, authUser);
-    const pastExamsCount = await this.prisma.examResult.count({
+    const pastTestsCount = await this.prisma.testResult.count({
       where: {
         lessonId: payload.lessonId,
         userId: authUser.id,
@@ -74,12 +74,12 @@ export class ExamsService {
         },
       },
     });
-    if (pastExamsCount >= 3) {
+    if (pastTestsCount >= 3) {
       throw new BadRequestException(
         'Too many attempts, please try again later',
       );
     }
-    const exams = await this.prisma.exam.findMany({
+    const tests = await this.prisma.test.findMany({
       where: {
         lessonId: payload.lessonId,
       },
@@ -88,19 +88,19 @@ export class ExamsService {
         answer: true,
       },
     });
-    if (exams.length !== payload.answers.length) {
+    if (tests.length !== payload.answers.length) {
       throw new HttpException(
-        "Answers' length is not the same with exams' length",
+        "Answers' length is not the same with tests' length",
         HttpStatus.NOT_ACCEPTABLE,
       );
     }
     const correctAnswers = payload.answers.filter((an) => {
-      const exam = exams.find((e) => e.id === an.id);
-      return exam?.answer === an.answer;
+      const test = tests.find((t) => t.id === an.id);
+      return test?.answer === an.answer;
     });
-    const wrongs = exams.length - correctAnswers.length;
-    const percent = (correctAnswers.length / exams.length) * 100;
-    return this.prisma.examResult.create({
+    const wrongs = tests.length - correctAnswers.length;
+    const percent = (correctAnswers.length / tests.length) * 100;
+    return this.prisma.testResult.create({
       data: {
         lessonId: payload.lessonId,
         userId: authUser.id,
@@ -111,60 +111,60 @@ export class ExamsService {
     });
   }
 
-  async createExam(payload: CreateExamDto, authUser: TAuthUser) {
+  async createTest(payload: CreateTestDto, authUser: TAuthUser) {
     await this.lessonService.getSingleLesson(payload.lessonId);
-    return this.prisma.exam.create({
+    return this.prisma.test.create({
       data: payload,
     });
   }
 
-  async createManyExam(payload: CreateManyExamDto, authUser: TAuthUser) {
+  async createManyTest(payload: CreateManyTestDto, authUser: TAuthUser) {
     await this.lessonService.getSingleLesson(payload.lessonId);
-    const data = payload.exams.map((ex) => ({
-      ...ex,
+    const data = payload.tests.map((t) => ({
+      ...t,
       lessonId: payload.lessonId,
     }));
-    return this.prisma.exam.createMany({
+    return this.prisma.test.createMany({
       data,
     });
   }
 
   async getDetail(id: number, authUser: TAuthUser) {
-    const exam = await this.prisma.exam.findUnique({
+    const test = await this.prisma.test.findUnique({
       where: { id },
     });
-    if (!exam) {
-      throw new NotFoundException('Exam not found');
+    if (!test) {
+      throw new NotFoundException('Test not found');
     }
-    const lessonGroup = await this.lessonService.getSingleLesson(exam.lessonId);
-    return { ...exam, lessonGroup };
+    const lessonGroup = await this.lessonService.getSingleLesson(test.lessonId);
+    return { ...test, lessonGroup };
   }
 
-  async updateExam(id: number, payload: UpdateExamDto, authUser: TAuthUser) {
-    const exam = await this.getDetail(id, authUser);
-    return this.prisma.exam.update({
+  async updateTest(id: number, payload: UpdateTestDto, authUser: TAuthUser) {
+    const test = await this.getDetail(id, authUser);
+    return this.prisma.test.update({
       where: { id },
       data: {
-        question: payload?.question || exam.question,
-        variantA: payload?.variantA || exam.variantA,
-        variantB: payload?.variantB || exam.variantB,
-        variantC: payload?.variantC || exam.variantC,
-        variantD: payload?.variantD || exam.variantD,
-        answer: payload?.answer || exam.answer,
+        question: payload?.question || test.question,
+        variantA: payload?.variantA || test.variantA,
+        variantB: payload?.variantB || test.variantB,
+        variantC: payload?.variantC || test.variantC,
+        variantD: payload?.variantD || test.variantD,
+        answer: payload?.answer || test.answer,
       },
     });
   }
 
-  async deleteExam(id: number, authUser: TAuthUser) {
+  async deleteTest(id: number, authUser: TAuthUser) {
     await this.getDetail(id, authUser);
-    await this.prisma.exam.delete({
+    await this.prisma.test.delete({
       where: { id },
     });
-    return { success: true, message: 'Exam deleted' };
+    return { success: true, message: 'Test deleted' };
   }
 
-  // Exam results
-  private getExamResultsPrismaQuery(query: FetchExamResultsDto) {
+  // Test results
+  private getTestResultsPrismaQuery(query: FetchTestResultsDto) {
     const pquery = {
       where: {},
     };
@@ -200,12 +200,12 @@ export class ExamsService {
     return pquery;
   }
 
-  async getExamResults(
-    query: FetchExamResultsDto,
-  ): PromiseManyData<ExamResult> {
-    const pquery = this.getExamResultsPrismaQuery(query);
+  async getTestResults(
+    query: FetchTestResultsDto,
+  ): PromiseManyData<TestResult> {
+    const pquery = this.getTestResultsPrismaQuery(query);
     const [data, total] = await this.prisma.$transaction([
-      this.prisma.examResult.findMany({
+      this.prisma.testResult.findMany({
         ...pquery,
         take: +query?.limit || 8,
         skip: +query?.offset || 0,
@@ -221,8 +221,8 @@ export class ExamsService {
                       name: true,
                     },
                   },
-                }
-              }
+                },
+              },
             },
           },
           user: {
@@ -234,20 +234,20 @@ export class ExamsService {
           },
         },
       }),
-      this.prisma.examResult.count(pquery),
+      this.prisma.testResult.count(pquery),
     ]);
     return { total, data };
   }
 
-  async getGroupExamResults(
+  async getGroupTestResults(
     id: string,
-    query: FetchGroupExamResultsDto,
+    query: FetchGroupTestResultsDto,
     authUser: TAuthUser,
-  ): PromiseManyData<ExamResult> {
+  ): PromiseManyData<TestResult> {
     await this.lessonService.getSingleLesson(id);
-    const pquery = this.getExamResultsPrismaQuery(query);
+    const pquery = this.getTestResultsPrismaQuery(query);
     const [data, total] = await this.prisma.$transaction([
-      this.prisma.examResult.findMany({
+      this.prisma.testResult.findMany({
         ...pquery,
         take: +query?.limit || 8,
         skip: +query?.offset || 0,
@@ -260,7 +260,7 @@ export class ExamsService {
           },
         },
       }),
-      this.prisma.examResult.count(pquery),
+      this.prisma.testResult.count(pquery),
     ]);
     return { total, data };
   }

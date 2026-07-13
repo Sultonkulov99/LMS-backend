@@ -7,27 +7,23 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { ExamAnswer } from '@prisma/client';
+import { TestAnswer } from '@prisma/client';
 import { Type } from 'class-transformer';
 
-class AnswerExamItemDto {
+class AnswerTestItemDto {
   @ApiProperty()
   @IsNumber()
   id: number;
 
   @ApiProperty({
-    enum: ExamAnswer,
-    example: ExamAnswer.variantC,
+    enum: TestAnswer,
+    example: TestAnswer.variantC,
   })
-  @IsEnum(ExamAnswer)
-  answer: ExamAnswer;
+  @IsEnum(TestAnswer)
+  answer: TestAnswer;
 }
 
-export class AnswerExamDto {
-  // @ApiProperty()
-  // @IsNumber()
-  // lessonGroupId: number;
-
+export class AnswerTestDto {
   @ApiProperty()
   @IsString()
   lessonId: string;
@@ -37,13 +33,13 @@ export class AnswerExamDto {
     example: [
       {
         id: 1,
-        answer: ExamAnswer.variantC,
+        answer: TestAnswer.variantC,
       },
     ],
   })
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => AnswerExamItemDto)
-  answers: AnswerExamItemDto[];
+  @Type(() => AnswerTestItemDto)
+  answers: AnswerTestItemDto[];
 }

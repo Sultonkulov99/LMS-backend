@@ -9,7 +9,7 @@ import { FilesModule } from './files/files.module';
 import { CoursesModule } from './courses/courses.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { PurchasedCoursesModule } from './purchased-courses/purchased-courses.module';
-import { ExamsModule } from './exams/exams.module';
+import { TestsModule } from './tests/tests.module';
 import { UsersModule } from './users/users.module';
 import { HomeworkModule } from './homework/homework.module';
 import { ContactModule } from './contact/contact.module';
@@ -34,7 +34,7 @@ import { TelegramBotModule } from './telegram-bot/telegram-bot.module';
     CoursesModule,
     PurchasedCoursesModule,
     LessonsModule,
-    ExamsModule,
+    TestsModule,
     HomeworkModule,
     QuestionsModule, 
     UsersModule,

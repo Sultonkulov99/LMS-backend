@@ -27,7 +27,7 @@ import { RolesGuard } from '../global/guards/roles.guard';
 import { Roles } from '../global/decorators/roles';
 import { UpdateLessonDto } from './dto/udpate-lesson.dto';
 import { PurchasedCourseGuard } from '../purchased-courses/guards/purchased-course.guard';
-import { LessonExamGuard } from '../exams/guards/lesson-exam.guard';
+import { LessonTestGuard } from '../tests/guards/lesson-test.guard';
 import { validateFile } from '../files/validation/file-validation';
 import { UpdateLessonViewDto } from './dto/update-lesson-view.dto';
 
@@ -40,7 +40,7 @@ export class LessonsController {
     summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonTestGuard)
   @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('single/:lessonId')
   getSingleLesson(@Param('lessonId') id: string) {
@@ -51,7 +51,7 @@ export class LessonsController {
     summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonTestGuard)
   @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Put('view/:lessonId')
   updateLessonView(
