@@ -4,6 +4,7 @@ import {
   IsArray,
   IsEnum,
   IsNumber,
+  IsString,
   ValidateNested,
 } from 'class-validator';
 import { ExamAnswer } from '@prisma/client';
@@ -23,9 +24,13 @@ class AnswerExamItemDto {
 }
 
 export class AnswerExamDto {
+  // @ApiProperty()
+  // @IsNumber()
+  // lessonGroupId: number;
+
   @ApiProperty()
-  @IsNumber()
-  lessonGroupId: number;
+  @IsString()
+  lessonId: string;
 
   @ApiProperty({
     isArray: true,

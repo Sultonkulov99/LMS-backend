@@ -25,10 +25,10 @@ export class HomeworkService {
   constructor(
     private prisma: PrismaService,
     private filesService: FilesService,
-  ) {}
+  ) { }
 
-  async getCourseHomeWorks(
-    courseId: string,
+  async getLessonHomeWorks(
+    lessonId: string,
     query: PaginationDto,
     authUser: TAuthUser,
   ): PromiseManyData<Homework> {
@@ -37,34 +37,29 @@ export class HomeworkService {
     const assistants =
       authUser.role === UserRole.ASSISTANT
         ? {
-            some: {
-              userId: authUser.id,
-            },
-          }
+          some: {
+            userId: authUser.id,
+          },
+        }
         : undefined;
-    const course = await this.prisma.course.findUnique({
+    const lesson = await this.prisma.lesson.findUnique({
       where: {
-        id: courseId,
-        mentorId,
-        assistants,
+        id: lessonId,
       },
     });
-    if (!course) {
-      throw new NotFoundException('Course not found');
+    if (!lesson) {
+      throw new NotFoundException('Lesson not found');
     }
     const pquery = {
       where: {
         lesson: {
-          group: {
-            course: {
-              id: courseId,
-              mentorId,
-              assistants,
-            },
-          },
+          id: lessonId,
+          mentorId,
+          assistants,
         },
       },
     };
+    
     const [total, data] = await this.prisma.$transaction([
       this.prisma.homework.count(pquery),
       this.prisma.homework.findMany({
@@ -97,10 +92,10 @@ export class HomeworkService {
               assistants:
                 authUser.role === UserRole.ASSISTANT
                   ? {
-                      some: {
-                        userId: authUser.id,
-                      },
-                    }
+                    some: {
+                      userId: authUser.id,
+                    },
+                  }
                   : undefined,
             },
           },
@@ -135,10 +130,10 @@ export class HomeworkService {
         group:
           authUser.role === UserRole.MENTOR
             ? {
-                course: {
-                  mentorId: authUser.id,
-                },
-              }
+              course: {
+                mentorId: authUser.id,
+              },
+            }
             : undefined,
       },
       include: {
@@ -283,29 +278,29 @@ export class HomeworkService {
         homeworkId: +query?.homework_id || undefined,
         homework:
           query?.course_id ||
-          authUser.role === UserRole.MENTOR ||
-          authUser.role === UserRole.ASSISTANT
+            authUser.role === UserRole.MENTOR ||
+            authUser.role === UserRole.ASSISTANT
             ? {
-                lesson: {
-                  group: {
-                    course: {
-                      id: query?.course_id,
-                      assistants:
-                        authUser.role === UserRole.ASSISTANT
-                          ? {
-                              some: {
-                                userId: authUser.id,
-                              },
-                            }
-                          : undefined,
-                      mentorId:
-                        authUser.role === UserRole.MENTOR
-                          ? authUser.id
-                          : undefined,
-                    },
+              lesson: {
+                group: {
+                  course: {
+                    id: query?.course_id,
+                    assistants:
+                      authUser.role === UserRole.ASSISTANT
+                        ? {
+                          some: {
+                            userId: authUser.id,
+                          },
+                        }
+                        : undefined,
+                    mentorId:
+                      authUser.role === UserRole.MENTOR
+                        ? authUser.id
+                        : undefined,
                   },
                 },
-              }
+              },
+            }
             : undefined,
       },
     };
@@ -349,27 +344,27 @@ export class HomeworkService {
         id,
         homework:
           authUser.role === UserRole.MENTOR ||
-          authUser.role === UserRole.ASSISTANT
+            authUser.role === UserRole.ASSISTANT
             ? {
-                lesson: {
-                  group: {
-                    course: {
-                      mentorId:
-                        authUser.role === UserRole.MENTOR
-                          ? authUser.id
-                          : undefined,
-                      assistants:
-                        authUser.role === UserRole.ASSISTANT
-                          ? {
-                              some: {
-                                userId: authUser.id,
-                              },
-                            }
-                          : undefined,
-                    },
+              lesson: {
+                group: {
+                  course: {
+                    mentorId:
+                      authUser.role === UserRole.MENTOR
+                        ? authUser.id
+                        : undefined,
+                    assistants:
+                      authUser.role === UserRole.ASSISTANT
+                        ? {
+                          some: {
+                            userId: authUser.id,
+                          },
+                        }
+                        : undefined,
                   },
                 },
-              }
+              },
+            }
             : undefined,
       },
       include: {
@@ -397,27 +392,27 @@ export class HomeworkService {
         status: HomeworkSubStatus.PENDING,
         homework:
           authUser.role === UserRole.MENTOR ||
-          authUser.role === UserRole.ASSISTANT
+            authUser.role === UserRole.ASSISTANT
             ? {
-                lesson: {
-                  group: {
-                    course: {
-                      mentorId:
-                        authUser.role === UserRole.MENTOR
-                          ? authUser.id
-                          : undefined,
-                      assistants:
-                        authUser.role === UserRole.ASSISTANT
-                          ? {
-                              some: {
-                                userId: authUser.id,
-                              },
-                            }
-                          : undefined,
-                    },
+              lesson: {
+                group: {
+                  course: {
+                    mentorId:
+                      authUser.role === UserRole.MENTOR
+                        ? authUser.id
+                        : undefined,
+                    assistants:
+                      authUser.role === UserRole.ASSISTANT
+                        ? {
+                          some: {
+                            userId: authUser.id,
+                          },
+                        }
+                        : undefined,
                   },
                 },
-              }
+              },
+            }
             : undefined,
       },
     });

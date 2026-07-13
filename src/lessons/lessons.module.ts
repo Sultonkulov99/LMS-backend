@@ -19,5 +19,6 @@ import { LessonFilesService } from './files/lesson-files.service';
     FilesService,
     LessonFilesService,
   ],
+  exports: [LessonsService],
 })
 export class LessonsModule {}

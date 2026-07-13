@@ -45,13 +45,13 @@ export class HomeworkController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.SUPER_ADMIN])
-  @Get('course/:id')
-  getCourseHomeWorks(
+  @Get('lesson/:id')
+  getLessonHomeWorks(
     @Param('id') id: string,
     @Query() query: PaginationDto,
     @Req() req,
   ) {
-    return this.homeworkService.getCourseHomeWorks(
+    return this.homeworkService.getLessonHomeWorks(
       id,
       query,
       req.user as TAuthUser,
