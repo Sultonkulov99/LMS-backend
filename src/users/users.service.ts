@@ -28,24 +28,6 @@ export class UsersService {
     image: true,
     courses: true,
     assignedCourses: true,
-    purchasedCourses: {
-      select: {
-        status: true,
-        amount: true,
-        course: {
-          select: {
-            id: true,
-            name: true,
-            category: {
-              select: {
-                id: true,
-                name: true,
-              }
-            }
-          }
-        }
-      }
-    },
     createdAt: true,
   };
 
@@ -74,6 +56,24 @@ export class UsersService {
       );
     }
     return phone;
+  }
+
+  async getDashboardInfo() {
+    const [admins, mentors, assistants, students, courses] = await this.prisma.$transaction([
+      this.prisma.user.count({where: {role: UserRole.ADMIN, status: Status.ACTIVE}}),
+      this.prisma.user.count({where: {role: UserRole.MENTOR, status: Status.ACTIVE}}),
+      this.prisma.user.count({where: {role: UserRole.ASSISTANT, status: Status.ACTIVE}}),
+      this.prisma.user.count({where: {role: UserRole.STUDENT, status: Status.ACTIVE}}),
+      this.prisma.course.count(),
+    ]);
+
+    return {
+      admins,
+      mentors,
+      assistants,
+      students,
+      courses
+    }
   }
 
   async getUsers(query: FetchUsersDto): PromiseManyData<TAuthUser> {

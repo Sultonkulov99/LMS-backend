@@ -52,6 +52,17 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
+  @Get('dashboard-info')
+  async getDashboardInfo() {
+    return this.usersService.getDashboardInfo()
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get()
   getUsers(@Query() query: FetchUsersDto) {
     return this.usersService.getUsers(query);
