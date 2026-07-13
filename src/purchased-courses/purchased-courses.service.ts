@@ -154,6 +154,40 @@ export class PurchasedCoursesService {
     return { total, data };
   }
 
+  async getPayments() {
+    const [total, payments]= await this.prisma.$transaction([
+      this.prisma.purchasedCourse.count(),
+      this.prisma.purchasedCourse.findMany({
+        select: {
+          amount: true,
+          status: true,
+          purchasedAt: true,
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              image: true,
+            }
+          },
+          course: {
+            select: {
+              id: true,
+              name: true,
+              category: {
+                select: {
+                  id: true,
+                  name: true
+                }
+              }
+            }
+          }
+        },
+        orderBy: { status: 'asc' },
+      })
+    ])
+    return {total, payments};
+  }
+
   async checkCoursePurchased(courseId: string, userId: number) {
     const course = await this.prisma.course.findUnique({
       where: {

@@ -55,6 +55,17 @@ export class PurchasedCoursesController {
   }
 
   @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
+  @Get('students')
+  getPayments() {
+    return this.purchasedCoursesService.getPayments( );
+  }
+
+  @ApiOperation({
     summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
   })
   @ApiBearerAuth()
