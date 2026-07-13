@@ -102,11 +102,24 @@ export class PurchasedCoursesController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
-  @Put('status')
+  @Put('status-completed')
+  updateCompleted(
+    @Body() payload: UpdateStatusDto
+  ) {
+    return this.purchasedCoursesService.updateCompleted(payload.courseId, payload.userId);
+  }
+
+  @ApiOperation({
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
+  @Put('status-pending')
   updateStatus(
     @Body() payload: UpdateStatusDto
   ) {
-    return this.purchasedCoursesService.updateStatus(payload.courseId, payload.userId);
+    return this.purchasedCoursesService.updatePending(payload.courseId, payload.userId);
   }
 
   @ApiOperation({

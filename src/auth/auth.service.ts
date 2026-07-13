@@ -134,15 +134,22 @@ export class AuthService {
       },
     });
 
-    const { course } = await this.purchasedCourseService.checkCoursePurchased(courseId, user.id);
-    await this.prisma.purchasedCourse.create({
-      data: {
-        courseId,
-        userId: user.id,
-        amount: course.price,
-      }
-    })
-    return this.generateTokens(user);
+    try {
+      const { course } = await this.purchasedCourseService.checkCoursePurchased(courseId, user.id); 
+  
+      await this.prisma.purchasedCourse.create({
+        data: {
+          courseId,
+          userId: user.id,
+          amount: course.price,
+        }
+      })
+
+      return this.generateTokens(user);
+    } catch (error) {
+      await this.prisma.user.delete({where: {id: user.id}})
+      throw error
+    }
   }
 
   async refreshToken(payload: RefreshTokenDto) {
