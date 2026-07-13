@@ -215,6 +215,15 @@ export class CoursesService {
         skip: +query?.offset || 0,
         select: {
           ...this.selectManyCourse,
+          mentor: {
+            select: {
+              mentorProfile: {
+                select: {
+                  job: true
+                }
+              }
+            }
+          },
           published: true,
           createdAt: true,
           _count: {

@@ -252,7 +252,7 @@ export class PurchasedCoursesService {
     });
   }
 
-  async updateStatus(courseId: string, userId: number) {
+  async updateCompleted(courseId: string, userId: number) {
     const purchased = await this.prisma.purchasedCourse.findFirst({
       where: {
         courseId: courseId,
@@ -276,7 +276,35 @@ export class PurchasedCoursesService {
     });
 
     return {
-      message: "Status has successfully changed"
+      message: "Status has successfully changed to COMPLETED"
+    }
+  }
+
+  async updatePending(courseId: string, userId: number) {
+    const purchased = await this.prisma.purchasedCourse.findFirst({
+      where: {
+        courseId: courseId,
+        userId: userId,
+      },
+    });
+    if (!purchased) {
+      throw new HttpException(
+        'This course has not purchased',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.prisma.purchasedCourse.update({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId,
+        },
+      },
+      data: { status: PaymentStatus.PENDING },
+    });
+
+    return {
+      message: "Status has successfully changed to PENDING"
     }
   }
 }

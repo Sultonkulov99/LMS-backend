@@ -23,9 +23,9 @@ export class FilesController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
-  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
+  @Roles([UserRole.STUDENT, UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @ApiOperation({
-    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @Get('private/lesson-file/:lessonId/:name')
   streamLessonFile(@Param() params: PrivateLessonFileParamDto, @Res() res) {
@@ -35,9 +35,9 @@ export class FilesController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
-  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
+  @Roles([UserRole.STUDENT, UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @ApiOperation({
-    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.MENTOR}, ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
   @Get('private/video/:lessonId/:hlsf')
   streamLessonVideo(
