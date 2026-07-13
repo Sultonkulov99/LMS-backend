@@ -219,10 +219,10 @@ export class CoursesService {
             select: {
               mentorProfile: {
                 select: {
-                  job: true
-                }
-              }
-            }
+                  job: true,
+                },
+              },
+            },
           },
           published: true,
           createdAt: true,
@@ -236,7 +236,19 @@ export class CoursesService {
       }),
       this.prisma.course.count(pquery),
     ]);
-    return { total, data };
+
+    const courses = data.map((course) => ({
+      ...course,
+      mentor: course.mentor
+        ? {
+            ...course.mentor,
+            job: course.mentor.mentorProfile?.job ?? null,
+            mentorProfile: undefined,
+          }
+        : null,
+    }));
+
+    return { total, data: courses };
   }
 
   async createCourse(payload: CreateCourseDto, authUser: TAuthUser) {

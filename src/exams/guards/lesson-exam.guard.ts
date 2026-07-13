@@ -18,13 +18,13 @@ export class LessonExamGuard implements CanActivate {
     const user = request.user as TAuthUser;
     const lesson = request.lesson as Lesson;
     const exams = await this.prisma.exam.count({
-      where: { lessonGroupId: lesson.groupId },
+      where: { lessonId: lesson.id },
     });
     if (exams) {
       const examPassed = await this.prisma.examResult.findFirst({
         where: {
           userId: user.id,
-          lessonGroupId: lesson.groupId,
+          lessonId: lesson.id,
           passed: true,
         },
       });

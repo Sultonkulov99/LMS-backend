@@ -5,7 +5,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { LessonGroupService } from '../lessons/group/group.service';
 import { CreateExamDto, CreateManyExamDto } from './dto/create-exam.dto';
 import { TAuthUser } from '../types/user';
 import { AnswerExamDto } from './dto/answer-exam.dto';
@@ -18,18 +17,19 @@ import {
   FetchGroupExamResultsDto,
 } from './dto/fetch-exam-results.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
+import { LessonsService } from 'src/lessons/lessons.service';
 
 @Injectable()
 export class ExamsService {
   constructor(
     private prisma: PrismaService,
-    private lessonGroupService: LessonGroupService,
+    private lessonService: LessonsService,
   ) {}
 
-  private async checkIsNotPassed(groupId: number, authUser: TAuthUser) {
+  private async checkIsNotPassed(lessoId: string, authUser: TAuthUser) {
     const passed = await this.prisma.examResult.findFirst({
       where: {
-        lessonGroupId: groupId,
+        lessonId: lessoId,
         userId: authUser.id,
         passed: true,
       },
@@ -40,15 +40,15 @@ export class ExamsService {
     return passed;
   }
 
-  async getGroupExams(groupId: number, authUser: TAuthUser, admin?: boolean) {
+  async getGroupExams(lessonId: string, authUser: TAuthUser, admin?: boolean) {
     if (admin) {
-      await this.lessonGroupService.getSingle(groupId, authUser);
+      await this.lessonService.getSingleLesson(lessonId);
     } else {
-      await this.checkIsNotPassed(groupId, authUser);
+      await this.checkIsNotPassed(lessonId, authUser);
     }
     return this.prisma.exam.findMany({
       where: {
-        lessonGroupId: groupId,
+        lessonId: lessonId,
       },
       select: {
         id: true,
@@ -64,10 +64,10 @@ export class ExamsService {
   }
 
   async passExam(payload: AnswerExamDto, authUser: TAuthUser) {
-    await this.checkIsNotPassed(payload.lessonGroupId, authUser);
+    await this.checkIsNotPassed(payload.lessonId, authUser);
     const pastExamsCount = await this.prisma.examResult.count({
       where: {
-        lessonGroupId: payload.lessonGroupId,
+        lessonId: payload.lessonId,
         userId: authUser.id,
         createdAt: {
           gt: getPastTime(14400),
@@ -81,7 +81,7 @@ export class ExamsService {
     }
     const exams = await this.prisma.exam.findMany({
       where: {
-        lessonGroupId: payload.lessonGroupId,
+        lessonId: payload.lessonId,
       },
       select: {
         id: true,
@@ -102,7 +102,7 @@ export class ExamsService {
     const percent = (correctAnswers.length / exams.length) * 100;
     return this.prisma.examResult.create({
       data: {
-        lessonGroupId: payload.lessonGroupId,
+        lessonId: payload.lessonId,
         userId: authUser.id,
         passed: percent > 50,
         corrects: correctAnswers.length,
@@ -112,17 +112,17 @@ export class ExamsService {
   }
 
   async createExam(payload: CreateExamDto, authUser: TAuthUser) {
-    await this.lessonGroupService.getSingle(payload.lessonGroupId, authUser);
+    await this.lessonService.getSingleLesson(payload.lessonId);
     return this.prisma.exam.create({
       data: payload,
     });
   }
 
   async createManyExam(payload: CreateManyExamDto, authUser: TAuthUser) {
-    await this.lessonGroupService.getSingle(payload.lessonGroupId, authUser);
+    await this.lessonService.getSingleLesson(payload.lessonId);
     const data = payload.exams.map((ex) => ({
       ...ex,
-      lessonGroupId: payload.lessonGroupId,
+      lessonId: payload.lessonId,
     }));
     return this.prisma.exam.createMany({
       data,
@@ -136,10 +136,7 @@ export class ExamsService {
     if (!exam) {
       throw new NotFoundException('Exam not found');
     }
-    const lessonGroup = await this.lessonGroupService.getSingle(
-      exam.lessonGroupId,
-      authUser,
-    );
+    const lessonGroup = await this.lessonService.getSingleLesson(exam.lessonId);
     return { ...exam, lessonGroup };
   }
 
@@ -213,15 +210,19 @@ export class ExamsService {
         take: +query?.limit || 8,
         skip: +query?.offset || 0,
         include: {
-          lessonGroup: {
+          lessons: {
             select: {
               name: true,
-              course: {
+              group: {
                 select: {
-                  id: true,
-                  name: true,
-                },
-              },
+                  course: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                }
+              }
             },
           },
           user: {
@@ -239,11 +240,11 @@ export class ExamsService {
   }
 
   async getGroupExamResults(
-    id: number,
+    id: string,
     query: FetchGroupExamResultsDto,
     authUser: TAuthUser,
   ): PromiseManyData<ExamResult> {
-    await this.lessonGroupService.getSingle(id, authUser);
+    await this.lessonService.getSingleLesson(id);
     const pquery = this.getExamResultsPrismaQuery(query);
     const [data, total] = await this.prisma.$transaction([
       this.prisma.examResult.findMany({

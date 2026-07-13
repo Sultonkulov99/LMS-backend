@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JWTAccessOptions, JWTRefreshOptions } from '../global/config/jwt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { User } from '@prisma/client';
+import { PaymentStatus, PurchasedCourse, User } from '@prisma/client';
 import { TAuthUser, UserRole } from '../types/user';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -63,10 +63,23 @@ export class AuthService {
       where: {
         phone: normalizedPhone,
       },
+      select: {
+        id: true,
+        fullName: true,
+        phone: true,
+        password: true,
+        role: true,
+        image: true,
+        purchasedCourses: {
+          select: { status: true }
+        }
+      }
     });
-    if (!user) {
+
+    if (!user || user.purchasedCourses[0].status === PaymentStatus.PENDING) {
       throw new UnauthorizedException();
     }
+
     if (await checkPassword(password, user.password)) {
       return user;
     }
@@ -75,6 +88,7 @@ export class AuthService {
 
   async login(data: LoginDto) {
     const user = await this.validateUser(data.phone, data.password);
+
     return {
       ...await this.generateTokens(user),
       image: user.image,

@@ -19,9 +19,13 @@ export class CreateExamDto {
   @MaxLength(800)
   question: string;
 
+  // @ApiProperty()
+  // @IsNumber()
+  // lessonGroupId: number;
+
   @ApiProperty()
-  @IsNumber()
-  lessonGroupId: number;
+  @IsString()
+  lessonId: string;
 
   @ApiProperty({
     example: 'Direct Object Module',
@@ -60,9 +64,13 @@ export class CreateExamDto {
 }
 
 export class CreateManyExamDto {
+  // @ApiProperty()
+  // @IsNumber()
+  // lessonGroupId: number;
+
   @ApiProperty()
-  @IsNumber()
-  lessonGroupId: number;
+  @IsString()
+  lessonId: string;
 
   @ApiProperty({
     isArray: true,
@@ -80,6 +88,6 @@ export class CreateManyExamDto {
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => OmitType(CreateExamDto, ['lessonGroupId']))
+  @Type(() => OmitType(CreateExamDto, ['lessonId']))
   exams: Omit<CreateExamDto, 'lessonGroupId'>[];
 }

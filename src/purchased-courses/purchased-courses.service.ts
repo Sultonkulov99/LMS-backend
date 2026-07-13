@@ -155,7 +155,7 @@ export class PurchasedCoursesService {
   }
 
   async getPayments() {
-    const [total, payments]= await this.prisma.$transaction([
+    const [total, payments] = await this.prisma.$transaction([
       this.prisma.purchasedCourse.count(),
       this.prisma.purchasedCourse.findMany({
         select: {
@@ -185,7 +185,7 @@ export class PurchasedCoursesService {
         orderBy: { status: 'asc' },
       })
     ])
-    return {total, payments};
+    return { total, payments };
   }
 
   async checkCoursePurchased(courseId: string, userId: number) {
@@ -252,7 +252,7 @@ export class PurchasedCoursesService {
     });
   }
 
-  async updateCompleted(courseId: string, userId: number) {
+  async updateStatus(courseId: string, userId: number) {
     const purchased = await this.prisma.purchasedCourse.findFirst({
       where: {
         courseId: courseId,
@@ -265,34 +265,22 @@ export class PurchasedCoursesService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    await this.prisma.purchasedCourse.update({
-      where: {
-        userId_courseId: {
-          userId,
-          courseId,
+    if (purchased.status === PaymentStatus.PENDING) {
+      await this.prisma.purchasedCourse.update({
+        where: {
+          userId_courseId: {
+            userId,
+            courseId,
+          },
         },
-      },
-      data: { status: PaymentStatus.COMPLETED },
-    });
+        data: { status: PaymentStatus.COMPLETED },
+      });
 
-    return {
-      message: "Status has successfully changed to COMPLETED"
+      return {
+        message: `Status has successfully changed to Completed`
+      }
     }
-  }
 
-  async updatePending(courseId: string, userId: number) {
-    const purchased = await this.prisma.purchasedCourse.findFirst({
-      where: {
-        courseId: courseId,
-        userId: userId,
-      },
-    });
-    if (!purchased) {
-      throw new HttpException(
-        'This course has not purchased',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
     await this.prisma.purchasedCourse.update({
       where: {
         userId_courseId: {
@@ -304,7 +292,7 @@ export class PurchasedCoursesService {
     });
 
     return {
-      message: "Status has successfully changed to PENDING"
+      message: `Status has successfully changed to Pending`
     }
   }
 }

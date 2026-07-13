@@ -37,8 +37,8 @@ export class ExamsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard)
   @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
-  @Get('lesson-group/:lessonGroupId')
-  getGroupExams(@Param('lessonGroupId', ParseIntPipe) id: number, @Req() req) {
+  @Get('lesson/:lessonId')
+  getLessonExams(@Param('lessonId') id: string, @Req() req) {
     return this.examsService.getGroupExams(id, req.user as TAuthUser);
   }
 
@@ -59,8 +59,8 @@ export class ExamsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN])
-  @Get('lesson-group/details/:id')
-  getGroupExamsAdmin(@Param('id', ParseIntPipe) id: number, @Req() req) {
+  @Get('lesson/details/:id')
+  getGroupExamsAdmin(@Param('id') id: string, @Req() req) {
     return this.examsService.getGroupExams(id, req.user as TAuthUser, true);
   }
 
@@ -140,9 +140,9 @@ export class ExamsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.MENTOR, UserRole.SUPER_ADMIN])
-  @Get('results/lesson-group/:id')
+  @Get('results/lesson/:id')
   getGroupExamResults(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Query() query: FetchGroupExamResultsDto,
     @Req() req,
   ) {

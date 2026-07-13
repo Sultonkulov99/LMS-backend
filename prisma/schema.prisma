@@ -168,14 +168,12 @@ model Rating {
 }
 
 model LessonGroup {
-  id          Int          @id @default(autoincrement())
-  name        String
-  lessons     Lesson[]
-  courseId    String
-  course      Course       @relation(fields: [courseId], references: [id])
-  createdAt   DateTime     @default(now())
-  exams       Exam[]
-  examResults ExamResult[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  lessons   Lesson[]
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Lesson {
@@ -191,6 +189,8 @@ model Lesson {
   lessonFiles  LessonFile[]
   homework     Homework?
   views        LessonView[]
+  exams        Exam[]
+  examResults  ExamResult[]
 }
 
 model LessonView {
@@ -238,28 +238,28 @@ model HomeworkSubmission {
 }
 
 model Exam {
-  id            Int         @id @default(autoincrement())
-  question      String
-  variantA      String
-  variantB      String
-  variantC      String
-  variantD      String
-  answer        ExamAnswer
-  lessonGroupId Int
-  lessonGroup   LessonGroup @relation(references: [id], fields: [lessonGroupId], onDelete: Cascade, onUpdate: Cascade)
-  createdAt     DateTime    @default(now())
+  id        Int        @id @default(autoincrement())
+  question  String
+  variantA  String
+  variantB  String
+  variantC  String
+  variantD  String
+  answer    ExamAnswer
+  createdAt DateTime   @default(now())
+  lessonId  String
+  lessons   Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model ExamResult {
-  id            Int         @id @default(autoincrement())
-  lessonGroupId Int
-  lessonGroup   LessonGroup @relation(references: [id], fields: [lessonGroupId], onDelete: Cascade, onUpdate: Cascade)
-  userId        Int
-  user          User        @relation(references: [id], fields: [userId], onDelete: Cascade, onUpdate: Cascade)
-  passed        Boolean
-  corrects      Int
-  wrongs        Int
-  createdAt     DateTime    @default(now())
+  id        Int      @id @default(autoincrement())
+  lessonId  String
+  lessons   Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    Int
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade, onUpdate: Cascade)
+  passed    Boolean
+  corrects  Int
+  wrongs    Int
+  createdAt DateTime @default(now())
 }
 
 model Question {
