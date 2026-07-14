@@ -81,7 +81,7 @@ export class AuthService {
       throw new NotFoundException();
     }
 
-    if(user.role === UserRole.STUDENT && user.purchasedCourses[0].status === PaymentStatus.PENDING) {
+    if(user.role === UserRole.STUDENT && user.purchasedCourses[0].status !== PaymentStatus.COMPLETED) {
       throw new ForbiddenException();
     }
 
