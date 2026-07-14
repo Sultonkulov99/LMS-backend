@@ -21,6 +21,7 @@ import {
 } from './dto/purchase-course.dto';
 import { FetchPurchasedCoursesDto } from './dto/fetch-purchased-courses.dto';
 import { FetchCourseStudentsDto } from './dto/fetch-course-students.dto';
+import { FetchPaymentsDto } from './dto/fetch-payments.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 
 @ApiTags('Purchased Courses')
@@ -61,8 +62,8 @@ export class PurchasedCoursesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
   @Get('students')
-  getPayments() {
-    return this.purchasedCoursesService.getPayments( );
+  getPayments(@Query() query: FetchPaymentsDto) {
+    return this.purchasedCoursesService.getPayments(query);
   }
 
   @ApiOperation({
