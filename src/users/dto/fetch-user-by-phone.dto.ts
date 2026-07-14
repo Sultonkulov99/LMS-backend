@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMobilePhone } from 'class-validator';
+import { Matches } from 'class-validator';
 
 export class FetchUserByPhoneParamsDto {
   @ApiProperty({
     example: '+998902400025',
   })
-  @IsMobilePhone('uz-UZ')
+  @Matches(/^(\+?998)(20|33|50|77|88|90|91|93|94|95|97|98|99)\d{7}$/, {
+    message: "Telefon raqami +998XXXXXXXXX yoki 998XXXXXXXXX formatida bo'lishi kerak",
+  })
   phone: string;
 }
