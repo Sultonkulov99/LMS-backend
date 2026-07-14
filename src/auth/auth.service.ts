@@ -81,13 +81,14 @@ export class AuthService {
       throw new NotFoundException();
     }
 
-    if(user.role === UserRole.STUDENT && user.purchasedCourses[0].status !== PaymentStatus.COMPLETED) {
-      throw new ForbiddenException();
-    }
-
     if (!await checkPassword(password, user.password)) {
       throw new NotFoundException();
     }
+    
+    if (user.role === UserRole.STUDENT && user.purchasedCourses[0].status !== PaymentStatus.COMPLETED) {
+      throw new ForbiddenException();
+    }
+
     return user;
   }
 
@@ -154,8 +155,8 @@ export class AuthService {
     });
 
     try {
-      const { course } = await this.purchasedCourseService.checkCoursePurchased(courseId, user.id); 
-  
+      const { course } = await this.purchasedCourseService.checkCoursePurchased(courseId, user.id);
+
       await this.prisma.purchasedCourse.create({
         data: {
           courseId,
@@ -166,7 +167,7 @@ export class AuthService {
 
       return this.generateTokens(user);
     } catch (error) {
-      await this.prisma.user.delete({where: {id: user.id}})
+      await this.prisma.user.delete({ where: { id: user.id } })
       throw error
     }
   }

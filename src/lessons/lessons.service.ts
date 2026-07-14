@@ -27,7 +27,7 @@ export class LessonsService {
         updatedAt: true,
         createdAt: true,
         homework: true,
-        // youtube_link: true,
+        youtube_link: true,
         lessonFiles: true,
       },
     });
