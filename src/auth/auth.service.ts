@@ -1,7 +1,9 @@
 import {
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { checkPassword, hashPassword } from '../utils/bcrypt';
@@ -76,17 +78,17 @@ export class AuthService {
       }
     });
     if (!user) {
-      throw new UnauthorizedException();
+      throw new NotFoundException();
     }
 
     if(user.role === UserRole.STUDENT && user.purchasedCourses[0].status === PaymentStatus.PENDING) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
 
-    if (await checkPassword(password, user.password)) {
-      return user;
+    if (!await checkPassword(password, user.password)) {
+      throw new NotFoundException();
     }
-    throw new UnauthorizedException();
+    return user;
   }
 
   async login(data: LoginDto) {
