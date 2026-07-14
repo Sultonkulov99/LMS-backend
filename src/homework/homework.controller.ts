@@ -30,7 +30,7 @@ import { UpdateHomeworkDto } from './dto/update-homework.dto';
 import { PaginationDto } from '../global/dto/pagination.dto';
 import { SubmitHomeworkDto } from './dto/submit-homework.dto';
 import { PurchasedCourseGuard } from '../purchased-courses/guards/purchased-course.guard';
-import { LessonExamGuard } from '../exams/guards/lesson-exam.guard';
+import { LessonTestGuard } from '../tests/guards/lesson-test.guard';
 import { CheckHomeworkDto } from './dto/check-homework.dto';
 import { FetchHomeworkSubmissionsDto } from './dto/fetch-homework-submissions.dto';
 
@@ -118,7 +118,7 @@ export class HomeworkController {
   // Submissions
   @ApiOperation({ summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}` })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonTestGuard)
   @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @Get('submission/mine/:lessonId')
   getMyHomeworkSubmissions(
@@ -135,7 +135,7 @@ export class HomeworkController {
 
   @ApiOperation({ summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}` })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonExamGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonTestGuard)
   @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))

@@ -8,20 +8,16 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
-import { ExamAnswer } from '@prisma/client';
+import { TestAnswer } from '@prisma/client';
 import { Type } from 'class-transformer';
 
-export class CreateExamDto {
+export class CreateTestDto {
   @ApiProperty({
     example: 'What does DOM mean in JavaScript?',
   })
   @IsString()
   @MaxLength(800)
   question: string;
-
-  // @ApiProperty()
-  // @IsNumber()
-  // lessonGroupId: number;
 
   @ApiProperty()
   @IsString()
@@ -56,18 +52,14 @@ export class CreateExamDto {
   variantD: string;
 
   @ApiProperty({
-    enum: ExamAnswer,
-    example: ExamAnswer.variantC,
+    enum: TestAnswer,
+    example: TestAnswer.variantC,
   })
-  @IsEnum(ExamAnswer)
-  answer: ExamAnswer;
+  @IsEnum(TestAnswer)
+  answer: TestAnswer;
 }
 
-export class CreateManyExamDto {
-  // @ApiProperty()
-  // @IsNumber()
-  // lessonGroupId: number;
-
+export class CreateManyTestDto {
   @ApiProperty()
   @IsString()
   lessonId: string;
@@ -88,6 +80,6 @@ export class CreateManyExamDto {
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => OmitType(CreateExamDto, ['lessonId']))
-  exams: Omit<CreateExamDto, 'lessonGroupId'>[];
+  @Type(() => OmitType(CreateTestDto, ['lessonId']))
+  tests: Omit<CreateTestDto, 'lessonId'>[];
 }

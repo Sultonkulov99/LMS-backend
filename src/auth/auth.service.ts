@@ -75,8 +75,11 @@ export class AuthService {
         }
       }
     });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
 
-    if (!user || user.purchasedCourses[0].status === PaymentStatus.PENDING) {
+    if(user.role === UserRole.STUDENT && user.purchasedCourses[0].status === PaymentStatus.PENDING) {
       throw new UnauthorizedException();
     }
 
