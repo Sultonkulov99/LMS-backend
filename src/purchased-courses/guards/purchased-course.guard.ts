@@ -6,10 +6,11 @@ import {
 } from '@nestjs/common';
 import { TAuthUser } from '../../types/user';
 import { PrismaService } from 'src/core/database/prisma.service';
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class PurchasedCourseGuard implements CanActivate {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -28,19 +29,29 @@ export class PurchasedCourseGuard implements CanActivate {
     if ('lessonGroupId' in request?.params) {
       lessonGroupId = +request.params.lessonGroupId;
     }
-    
-    const where = {
-      lessonGroups: {
-        some: {
-          id: lessonGroupId,
+    let where = null
+    if (user.role === UserRole.STUDENT) {
+      where = {
+        lessonGroups: {
+          some: {
+            id: lessonGroupId,
+          },
         },
-      },
-      purchases: {
-        some: {
-          userId: user.id,
+        purchases: {
+          some: {
+            userId: user.id,
+          },
         },
-      },
-    };
+      };
+    } else {
+      where = {
+        lessonGroups: {
+          some: {
+            id: lessonGroupId,
+          },
+        },
+      };
+    }
     const courseId = request?.body?.courseId || request?.params?.courseId;
     if (courseId) {
       delete where.lessonGroups;
