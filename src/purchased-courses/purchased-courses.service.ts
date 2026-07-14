@@ -182,7 +182,10 @@ export class PurchasedCoursesService {
             }
           }
         },
-        orderBy: { status: 'asc' },
+        orderBy: [
+          { status: 'asc' },
+          { purchasedAt: "desc" }
+        ] 
       })
     ])
     return { total, payments };
