@@ -17,9 +17,12 @@ export class PurchasedCourseGuard implements CanActivate {
     const user = request.user as TAuthUser;
 
     let lessonGroupId = null;
-    if ('lessonId' in request?.params) {
-      const id = request.params.lessonId;
-      const lesson = await this.prisma.lesson.findUnique({ where: { id } });
+    const lessonIdFromBody = request?.body?.lessonId;
+    const lessonIdFromParams = request?.params?.lessonId;
+    const lessonId = lessonIdFromParams || lessonIdFromBody;
+
+    if (lessonId) {
+      const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
       if (!lesson) {
         throw new NotFoundException('Lesson not found');
       }
