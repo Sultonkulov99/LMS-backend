@@ -27,7 +27,7 @@ export class LessonTestGuard implements CanActivate {
           passed: true,
         },
       });
-      if (!testPassed) {
+      if (!testPassed && user.role === 'STUDENT') {
         throw new BadRequestException('You should pass test first');
       }
     }
