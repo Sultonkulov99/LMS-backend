@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { TAuthUser, UserRole } from '../types/user';
 import { LessonGroupService } from './group/group.service';
@@ -16,8 +16,8 @@ export class LessonsService {
     private filesService: FilesService,
   ) {}
 
-  getSingleLesson(id: string) {
-    return this.prisma.lesson.findUnique({
+  async getSingleLesson(id: string) {
+    const lesson = await this.prisma.lesson.findUnique({
       where: { id },
       select: {
         id: true,
@@ -31,6 +31,10 @@ export class LessonsService {
         lessonFiles: true,
       },
     });
+    if (!lesson) {
+      throw new NotFoundException(`Lesson with id "${id}" not found`);
+    }
+    return lesson;
   }
 
   async updateLessonView(
