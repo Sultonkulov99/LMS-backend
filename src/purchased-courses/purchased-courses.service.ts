@@ -8,6 +8,7 @@ import { FetchPurchasedCoursesDto } from './dto/fetch-purchased-courses.dto';
 import { PromiseManyData } from '../types/common/data-response';
 import { Course, PaidVia, PaymentStatus, PurchasedCourse } from '@prisma/client';
 import { FetchCourseStudentsDto } from './dto/fetch-course-students.dto';
+import { FetchPaymentsDto } from './dto/fetch-payments.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
@@ -154,10 +155,30 @@ export class PurchasedCoursesService {
     return { total, data };
   }
 
-  async getPayments() {
-    const [total, payments] = await this.prisma.$transaction([
-      this.prisma.purchasedCourse.count(),
+  async getPayments(query: FetchPaymentsDto): PromiseManyData<Pick<PurchasedCourse, 'amount' | 'status' | 'purchasedAt'>> {
+    const pquery = {
+      where: {},
+    };
+    if (query?.search) {
+      Object.assign(pquery.where, {
+        user: {
+          fullName: {
+            search: query.search.replace(/\s/g, ' | '),
+          },
+        },
+      });
+    }
+    if (query?.status) {
+      Object.assign(pquery.where, {
+        status: query.status,
+      });
+    }
+    const [total, data] = await this.prisma.$transaction([
+      this.prisma.purchasedCourse.count(pquery),
       this.prisma.purchasedCourse.findMany({
+        ...pquery,
+        take: +query?.limit || 8,
+        skip: +query?.offset || 0,
         select: {
           amount: true,
           status: true,
@@ -167,7 +188,7 @@ export class PurchasedCoursesService {
               id: true,
               fullName: true,
               image: true,
-            }
+            },
           },
           course: {
             select: {
@@ -176,19 +197,19 @@ export class PurchasedCoursesService {
               category: {
                 select: {
                   id: true,
-                  name: true
-                }
-              }
-            }
-          }
+                  name: true,
+                },
+              },
+            },
+          },
         },
         orderBy: [
           { status: 'asc' },
-          { purchasedAt: "desc" }
-        ] 
-      })
-    ])
-    return { total, payments };
+          { purchasedAt: 'desc' },
+        ],
+      }),
+    ]);
+    return { total, data };
   }
 
   async checkCoursePurchased(courseId: string, userId: number) {
