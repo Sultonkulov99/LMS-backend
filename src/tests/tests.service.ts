@@ -65,7 +65,6 @@ export class TestsService {
 
   async passTest(payload: AnswerTestDto, authUser: TAuthUser) {
     await this.checkIsNotPassed(payload.lessonId, authUser);
-    console.log(authUser.id, "AAA")
     const pastTestsCount = await this.prisma.testResult.count({
       where: {
         lessonId: payload.lessonId,
