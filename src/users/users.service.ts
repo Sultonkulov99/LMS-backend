@@ -162,6 +162,27 @@ export class UsersService {
     return mentor;
   }
 
+  async getMentorOwnInfo(id: number) {
+    const mentor = await this.prisma.user.findUnique({
+      where: { id, role: UserRole.MENTOR, status: Status.ACTIVE },
+      select: {
+        ...this.selectUser,
+        mentorProfile: true,
+        courses: true,
+        assignedCourses: false,
+        _count: {
+          select: {
+            courses: true,
+          },
+        },
+      },
+    });
+    if (!mentor) {
+      throw new NotFoundException('Mentor not found');
+    }
+    return mentor;
+  }
+
   async getUserByPhone(phone: string) {
     const user = await this.prisma.user.findUnique({
       where: {

@@ -14,6 +14,7 @@ import {
   Homework,
   HomeworkSubmission,
   HomeworkSubStatus,
+  Prisma,
 } from '@prisma/client';
 import { SubmitHomeworkDto } from './dto/submit-homework.dto';
 import { CheckHomeworkDto } from './dto/check-homework.dto';
@@ -50,12 +51,17 @@ export class HomeworkService {
     if (!lesson) {
       throw new NotFoundException('Lesson not found');
     }
+
     const pquery = {
       where: {
         lesson: {
           id: lessonId,
-          mentorId,
-          assistants,
+          group: {
+            course: {
+              mentorId,
+              assistants,
+            }
+          }
         },
       },
     };
@@ -127,7 +133,7 @@ export class HomeworkService {
     const lesson = await this.prisma.lesson.findUnique({
       where: {
         id,
-        group:
+        group: 
           authUser.role === UserRole.MENTOR
             ? {
               course: {
@@ -141,6 +147,7 @@ export class HomeworkService {
       },
     });
     if (!lesson) {
+      // console.log(lesson)
       throw new NotFoundException('Lesson not found');
     }
     return lesson;
@@ -151,10 +158,13 @@ export class HomeworkService {
     if (lesson.homework) {
       throw new BadRequestException('Lesson already has a homework');
     }
-    const file = await this.filesService.saveFile(
-      payload.file,
-      EFileType.COURSE_CONTENT,
-    );
+    let file = null
+    if(payload.file) {
+      file = await this.filesService.saveFile(
+        payload.file,
+        EFileType.COURSE_CONTENT,
+      );
+    }
     return this.prisma.homework.create({
       data: {
         lessonId: payload.lessonId,

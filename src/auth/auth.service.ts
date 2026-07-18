@@ -82,7 +82,7 @@ export class AuthService {
     }
 
     if (!await checkPassword(password, user.password)) {
-      throw new NotFoundException();
+      throw new UnauthorizedException();
     }
     
     if (user.role === UserRole.STUDENT && user.purchasedCourses[0].status !== PaymentStatus.COMPLETED) {
