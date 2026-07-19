@@ -27,7 +27,7 @@ export class FilesService {
   };
 
   private generateFileName(file: Express.Multer.File, type: EFileType) {
-    const ext = file.originalname.split('.').at(-1);
+    const ext = file?.originalname?.split('.')?.at(-1);
     const uuid = randomUUID();
     return `${this.prefixes[type]}_${uuid}.${ext}`;
   }

@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   Req,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -35,6 +36,18 @@ export class UsersController {
     return this.usersService.getMentors();
   }
 
+  @ApiOperation({
+    summary: `${UserRole.MENTOR}`,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([UserRole.MENTOR])
+  @Get('mentor/mine')
+  getMentorOwnInfo(@Request() req) {
+    const user = req.user as TAuthUser;
+    return this.usersService.getMentorOwnInfo(user.id);
+  }
+  
   @ApiOperation({
     summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
   })
