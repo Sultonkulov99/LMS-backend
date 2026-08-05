@@ -12,7 +12,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: '*',
-  });
+  }); 
 
   if (process.env?.SWAGGER === 'true') {
     const swaggerDoc = SwaggerModule.createDocument(app, SwaggerDocConfig);

@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: lms_105_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: lms
+    ports:
+      - "5433:5432"
+    volumes:
+      - baza_data:/var/lib/postgresql/data
+  redis:
+    image: redis:7
+    container_name: lms_redis 
+    restart: always 
+    ports:
+      - "6379:6379"
+  app:
+    build: .
+    container_name: lms_app
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "4000:9000"
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "
+        npx prisma generate &&
+        npx prisma migrate deploy &&
+        npm run start:prod
+      "
+    environment:
+      DATABASE_URL: postgres://postgres:12345@db:5432/lms
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+volumes:
+  baza_data:
