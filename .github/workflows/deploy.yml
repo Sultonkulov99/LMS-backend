@@ -28,7 +28,7 @@ jobs:
             else
               echo "Pulling latest changes!"
               cd LMS-backend   
-              git pull origin main  
+              git pull origin main   
             fi
   
             echo "Stopping containers"
