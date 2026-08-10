@@ -18,7 +18,7 @@ services:
     container_name: lms_redis 
     restart: always 
     ports:
-      - "6379:6379"
+      - "6377:6379"
   app:
     build: .
     container_name: lms_app
