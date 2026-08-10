@@ -45,4 +45,3 @@ services:
 
 volumes:
   baza_data:
-  uploads_data:
