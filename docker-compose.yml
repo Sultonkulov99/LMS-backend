@@ -22,7 +22,7 @@ services:
   app:
     build: .
     volumes:
-      - uploads_data:/app/uploads
+      - ./uploads:/app/uploads
     container_name: lms_app
     restart: always
     env_file:
