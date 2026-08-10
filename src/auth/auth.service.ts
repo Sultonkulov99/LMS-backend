@@ -60,8 +60,6 @@ export class AuthService {
   }
 
   async validateUser(phone: string, password: string) {
-    // const normalizedPhone = normalizePhoneNumber(phone) || phone;
-    // console.log(12,phone, password, normalizedPhone)
     const user = await this.prisma.user.findUnique({
       where: {
         phone: phone,
@@ -78,7 +76,6 @@ export class AuthService {
         }
       }
     });
-    console.log(13,user)
     if (!user) {
       throw new NotFoundException();
     }
@@ -95,7 +92,6 @@ export class AuthService {
   }
 
   async login(data: LoginDto) {
-    console.log("data",data)
     const user = await this.validateUser(data.phone, data.password);
 
     return {

@@ -21,6 +21,8 @@ services:
       - "6377:6379"
   app:
     build: .
+    volumes:
+      - uploads_data:/app/uploads
     container_name: lms_app
     restart: always
     env_file:
@@ -43,3 +45,4 @@ services:
 
 volumes:
   baza_data:
+  uploads_data
