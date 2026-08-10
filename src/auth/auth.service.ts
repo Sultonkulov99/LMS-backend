@@ -60,11 +60,11 @@ export class AuthService {
   }
 
   async validateUser(phone: string, password: string) {
-    const normalizedPhone = normalizePhoneNumber(phone) || phone;
-    console.log(12,phone, password)
+    // const normalizedPhone = normalizePhoneNumber(phone) || phone;
+    // console.log(12,phone, password, normalizedPhone)
     const user = await this.prisma.user.findUnique({
       where: {
-        phone: normalizedPhone,
+        phone: phone,
       },
       select: {
         id: true,
