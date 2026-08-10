@@ -1,3 +1,5 @@
+name: Deploy
+
 on:
   push:
     branches:
@@ -9,33 +11,48 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Deploy over SSH and run Docker Compose
+      - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+
           script: |
-            echo "Creating project folder if it doesn't exist!"
-            mkdir -p /home/ubuntu
+            set -e
+
+            echo "===== DEPLOY START ====="
+
             cd /home/ubuntu
 
-            if [ ! -d "LMS-backend/.git" ]; then
-              echo "Cloning repository!" 
-              git clone https://github.com/Sultonkulov99/LMS-backend
+            if [ ! -d "/home/ubuntu/LMS-backend/.git" ]; then
+              echo "Repository not found. Cloning..."
+              rm -rf /home/ubuntu/LMS-backend
+              git clone https://github.com/Sultonkulov99/LMS-backend.git /home/ubuntu/LMS-backend
             else
-              echo "Pulling latest changes!"
-              cd LMS-backend   
-              git pull origin main   
+              echo "Repository exists. Pulling latest changes..."
+              cd /home/ubuntu/LMS-backend
+              git fetch origin main
+              git reset --hard origin/main
             fi
-  
-            echo "Stopping containers"
+
+            cd /home/ubuntu/LMS-backend
+
+            echo "===== CURRENT COMMIT ====="
+            git log -1 --oneline
+
+            echo "===== STOPPING CONTAINERS ====="
             docker compose down
 
-            echo "Building containers"
-            docker compose build 
+            echo "===== BUILDING ====="
+            docker compose build --no-cache
 
-            echo "Running containers"
-            docker compose up -d 
+            echo "===== STARTING ====="
+            docker compose up -d
+
+            echo "===== CONTAINERS ====="
+            docker compose ps
+
+            echo "===== DEPLOY FINISHED ====="
