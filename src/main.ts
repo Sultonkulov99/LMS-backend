@@ -19,7 +19,7 @@ async function bootstrap() {
     SwaggerModule.setup('swagger', app, swaggerDoc,{
       swaggerOptions:{
         persistAuthorization: true, 
-      }
+      }  
     });
   }
 
