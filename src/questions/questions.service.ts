@@ -17,12 +17,16 @@ import { CreateAnswerDto } from './dto/create-answer.dto';
 import { UpdateAnswerDto } from './dto/update-answer.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
+import { QuestionsGateway } from './questions.gateway';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class QuestionsService {
   constructor(
     private prisma: PrismaService,
     private filesService: FilesService,
+    private questionsGateway: QuestionsGateway,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   private $selectQuestionWithAnswer = {
@@ -193,14 +197,27 @@ export class QuestionsService {
         EFileType.PUBLIC_FILE,
       );
     }
-    return this.prisma.question.create({
+    const question = await this.prisma.question.create({
       data: {
         courseId,
         text: payload.text,
         file: payload?.file || null,
         userId: authUser.id,
       },
+      select: this.$selectQuestionWithAnswer,
     });
+
+    this.questionsGateway.emitNewQuestion(courseId, question);
+
+    // Notification tizimi uchun event — mentor + assistentlarga boradi (listener'da hisoblanadi)
+    this.eventEmitter.emit('question.created', {
+      id: question.id,
+      userId: authUser.id,
+      courseId,
+      text: question.text,
+    });
+
+    return question;
   }
 
   async updateQuestion(
@@ -246,14 +263,36 @@ export class QuestionsService {
         EFileType.PUBLIC_FILE,
       );
     }
-    return this.prisma.questionAnswer.create({
+    const answer = await this.prisma.questionAnswer.create({
       data: {
         userId: authUser.id,
         questionId: id,
         text: payload.text,
         file: payload?.file || null,
       },
+      include: {
+        answeredBy: {
+          select: { id: true, fullName: true, image: true, role: true },
+        },
+      },
     });
+
+    this.questionsGateway.emitNewAnswer(
+      (question as any).courseId,
+      (question as any).userId,
+      answer,
+    );
+
+    // Notification tizimi uchun event — savolni bergan studentga boradi
+    this.eventEmitter.emit('question.answered', {
+      questionId: id,
+      courseId: (question as any).courseId,
+      answeredByUserId: authUser.id,
+      studentUserId: (question as any).userId,
+      text: answer.text,
+    });
+
+    return answer;
   }
 
   async getSingleAnswer(id: number, authUser: TAuthUser) {
@@ -311,7 +350,10 @@ export class QuestionsService {
       this.filesService.deleteFile(question.file, EFileType.PUBLIC_FILE);
     }
     if (question.answer?.file) {
-      this.filesService.deleteFile(question.answer.file, EFileType.PUBLIC_FILE);
+      this.filesService.deleteFile(
+        question.answer.file,
+        EFileType.PUBLIC_FILE,
+      );
     }
     await this.prisma.question.delete({
       where: { id },

@@ -19,6 +19,8 @@ import { PrismaModule } from './core/database/prisma.module';
 import { SeederModule } from './core/seeder/seeder.module';
 import { RedisModule } from './global/redis/redis.module';
 import { TelegramBotModule } from './telegram-bot/telegram-bot.module';
+import { NotificationModule } from './notification/notification.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { TelegramBotModule } from './telegram-bot/telegram-bot.module';
       isGlobal: true,
       useClass: CacheModuleConfig,
     }),
+    EventEmitterModule.forRoot(),
+    NotificationModule,
     AuthModule,
     ProfileModule,
     CoursesModule,
@@ -43,7 +47,7 @@ import { TelegramBotModule } from './telegram-bot/telegram-bot.module';
     FilesModule,
     SeederModule,
     RedisModule,
-    TelegramBotModule
+    TelegramBotModule,
   ],
   controllers: [AppController],
   providers: [AppService],
