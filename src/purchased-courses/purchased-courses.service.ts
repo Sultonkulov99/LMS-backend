@@ -24,6 +24,7 @@ export class PurchasedCoursesService {
         purchases: {
           some: {
             userId: authUser.id,
+            status: PaymentStatus.COMPLETED,
           },
         },
       },

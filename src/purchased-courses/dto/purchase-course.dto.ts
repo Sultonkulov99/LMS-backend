@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString, IsUUID, Matches } from 'class-validator';
 import { PaidVia } from '@prisma/client';
+import { uzMsg } from '../../global/validation-messages';
 
 export class PurchaseCourseDto {
   @ApiProperty()
-  @IsString()
-  @IsUUID()
+  @IsString({ message: uzMsg.isString('Kurs ID') })
+  @IsUUID(undefined, { message: uzMsg.isUUID('Kurs ID') })
   courseId: string;
 
   // @ApiProperty({

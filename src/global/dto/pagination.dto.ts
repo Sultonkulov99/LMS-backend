@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumberString, IsOptional } from 'class-validator';
+import { uzMsg } from '../validation-messages';
 
 export class PaginationDto {
   @ApiProperty({
     example: 0,
     required: false,
   })
-  @IsNumberString()
+  @IsNumberString({}, { message: uzMsg.isNumberString('Offset') })
   @IsOptional()
   offset?: string;
 
@@ -14,7 +15,7 @@ export class PaginationDto {
     example: 8,
     required: false,
   })
-  @IsNumberString()
+  @IsNumberString({}, { message: uzMsg.isNumberString('Limit') })
   @IsOptional()
   limit?: string;
 }

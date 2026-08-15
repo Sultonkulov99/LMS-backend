@@ -8,12 +8,13 @@ import {
   IsString,
 } from 'class-validator';
 import { CourseLevel } from '../../types/course';
+import { uzMsg } from '../../global/validation-messages';
 
 export class FetchPurchasedCoursesDto extends PaginationDto {
   @ApiProperty({
     required: false,
   })
-  @IsString()
+  @IsString({ message: uzMsg.isString('Qidiruv') })
   @IsOptional()
   search?: string;
 
@@ -23,7 +24,7 @@ export class FetchPurchasedCoursesDto extends PaginationDto {
     format: 'number',
   })
   @IsOptional()
-  @IsNumberString()
+  @IsNumberString({}, { message: uzMsg.isNumberString('Kategoriya') })
   category_id?: string;
 
   @ApiProperty({
@@ -32,6 +33,6 @@ export class FetchPurchasedCoursesDto extends PaginationDto {
     enum: CourseLevel,
   })
   @IsOptional()
-  @IsEnum(CourseLevel)
+  @IsEnum(CourseLevel, { message: uzMsg.isEnum('Daraja') })
   level?: CourseLevel;
 }

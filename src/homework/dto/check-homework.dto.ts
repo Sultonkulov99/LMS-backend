@@ -6,19 +6,20 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { uzMsg } from '../../global/validation-messages';
 
 export class CheckHomeworkDto {
   @ApiProperty()
-  @IsNumber()
+  @IsNumber({}, { message: uzMsg.isNumber('Topshiriq ID') })
   submissionId: number;
 
   @ApiProperty({ type: 'boolean' })
-  @IsBoolean()
+  @IsBoolean({ message: uzMsg.isBoolean('Tasdiqlangan holati') })
   approved: boolean;
 
   @ApiProperty({ required: false, nullable: true })
   @IsOptional()
-  @IsString()
-  @MaxLength(1000)
+  @IsString({ message: uzMsg.isString('Sabab') })
+  @MaxLength(1000, { message: uzMsg.maxLength('Sabab', 1000) })
   reason?: string;
 }

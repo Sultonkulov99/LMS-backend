@@ -9,23 +9,24 @@ import {
 } from 'class-validator';
 import { TestAnswer } from '@prisma/client';
 import { Type } from 'class-transformer';
+import { uzMsg } from '../../global/validation-messages';
 
 class AnswerTestItemDto {
   @ApiProperty()
-  @IsNumber()
+  @IsNumber({}, { message: uzMsg.isNumber('Savol ID') })
   id: number;
 
   @ApiProperty({
     enum: TestAnswer,
     example: TestAnswer.variantC,
   })
-  @IsEnum(TestAnswer)
+  @IsEnum(TestAnswer, { message: uzMsg.isEnum('Javob') })
   answer: TestAnswer;
 }
 
 export class AnswerTestDto {
   @ApiProperty()
-  @IsString()
+  @IsString({ message: uzMsg.isString('Dars ID') })
   lessonId: string;
 
   @ApiProperty({
@@ -37,9 +38,9 @@ export class AnswerTestDto {
       },
     ],
   })
-  @IsArray()
+  @IsArray({ message: uzMsg.isArray('Javoblar') })
   @ValidateNested({ each: true })
-  @ArrayMinSize(1)
+  @ArrayMinSize(1, { message: uzMsg.arrayMinSize('Javoblar', 1) })
   @Type(() => AnswerTestItemDto)
   answers: AnswerTestItemDto[];
 }
