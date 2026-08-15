@@ -1,0 +1,58 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+
+          script: |
+            set -e
+
+            echo "===== DEPLOY START ====="
+
+            cd /home/ubuntu
+
+            if [ ! -d "/home/ubuntu/LMS-backend/.git" ]; then
+              echo "Repository not found. Cloning..."
+              rm -rf /home/ubuntu/LMS-backend
+              git clone https://github.com/Sultonkulov99/LMS-backend.git /home/ubuntu/LMS-backend
+            else
+              echo "Repository exists. Pulling latest changes..."
+              cd /home/ubuntu/LMS-backend
+              git fetch origin main
+              git reset --hard origin/main
+            fi
+
+            cd /home/ubuntu/LMS-backend
+
+            echo "===== CURRENT COMMIT ====="
+            git log -1 --oneline
+
+            echo "===== STOPPING CONTAINERS ====="
+            docker compose down
+
+            echo "===== BUILDING ====="
+            docker compose build --no-cache
+
+            echo "===== STARTING ====="
+            docker compose up -d
+
+            echo "===== CONTAINERS ====="
+            docker compose ps
+
+            echo "===== DEPLOY FINISHED ====="

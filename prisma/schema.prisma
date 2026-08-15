@@ -75,6 +75,7 @@ model User {
   questionAnswers     QuestionAnswer[]
   lastActivity        LastActivity?
   views               LessonView[]
+  notifications       Notification[]
 }
 
 model MentorProfile {
@@ -287,4 +288,29 @@ model QuestionAnswer {
   file       String?
   updatedAt  DateTime?
   createdAt  DateTime  @default(now())
+}
+
+
+enum NotificationType {
+  NEW_QUESTION
+  NEW_ANSWER
+  NEW_HOMEWORK_SUBMISSION
+  HOMEWORK_REVIEWED
+  SYSTEM_MESSAGE
+}
+
+model Notification {
+  id         Int              @id @default(autoincrement())
+  userId     Int
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       NotificationType
+  message    String
+  entityType String?          // "question" | "homework" | ...
+  entityId   String?          // Question.id, Homework.id va h.k. (stringga cast qilib saqlanadi)
+  read       Boolean          @default(false)
+  readAt     DateTime?
+  createdAt  DateTime         @default(now())
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
 }

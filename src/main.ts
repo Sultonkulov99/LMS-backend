@@ -12,17 +12,17 @@ async function bootstrap() {
 
   app.enableCors({
     origin: '*',
-  });
+  }); 
 
   if (process.env?.SWAGGER === 'true') {
     const swaggerDoc = SwaggerModule.createDocument(app, SwaggerDocConfig);
     SwaggerModule.setup('swagger', app, swaggerDoc,{
       swaggerOptions:{
         persistAuthorization: true, 
-      }
+      }  
     });
   }
 
-  await app.listen(+process.env.PORT || 9000);
+  await app.listen(9000,"0.0.0.0");
 }
 bootstrap();
