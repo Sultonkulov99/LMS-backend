@@ -37,7 +37,7 @@ export class UsersService {
     });
     if (user) {
       throw new BadRequestException(
-        'User with given phone number is already exists',
+        'Kiritilgan raqamli foydalanuvchi allaqachon mavjud',
       );
     }
     return phone;
@@ -52,7 +52,7 @@ export class UsersService {
     });
     if (user) {
       throw new BadRequestException(
-        'User with given phone number is already exists',
+        'Kiritilgan raqamli foydalanuvchi allaqachon mavjud',
       );
     }
     return phone;
@@ -123,7 +123,7 @@ export class UsersService {
       },
     });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Foydalanuvchi topilmadi');
     }
     return user;
   }
@@ -157,7 +157,7 @@ export class UsersService {
       },
     });
     if (!mentor) {
-      throw new NotFoundException('Mentor not found');
+      throw new NotFoundException('Mentor topilmadi');
     }
     return mentor;
   }
@@ -178,7 +178,7 @@ export class UsersService {
       },
     });
     if (!mentor) {
-      throw new NotFoundException('Mentor not found');
+      throw new NotFoundException('Mentor topilmadi');
     }
     return mentor;
   }
@@ -192,7 +192,7 @@ export class UsersService {
       select: this.selectUser,
     });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Foydalanuvchi topilmadi');
     }
     return user;
   }
@@ -240,7 +240,7 @@ export class UsersService {
       },
     });
     if (!course) {
-      throw new NotFoundException('Course not found');
+      throw new NotFoundException('Kurs topilmadi');
     }
     await this.checkUserPhoneNotExists(payload.phone);
     const hashedPassword = await hashPassword(payload.password);
@@ -276,7 +276,7 @@ export class UsersService {
     });
 
     if (!mentor) {
-      throw new NotFoundException('Mentor not found');
+      throw new NotFoundException('Mentor topilmadi');
     }
 
     if (payload?.phone) {
@@ -324,7 +324,7 @@ export class UsersService {
     });
 
     if (!assistant) {
-      throw new NotFoundException('Mentor not found');
+      throw new NotFoundException('Asistent topilmadi');
     }
 
     if (payload?.phone) {
@@ -368,7 +368,7 @@ export class UsersService {
     });
 
     if (!student) {
-      throw new NotFoundException('Mentor not found');
+      throw new NotFoundException('Student topilmadi');
     }
 
     if (payload?.phone) {
@@ -414,22 +414,22 @@ export class UsersService {
       },
     });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Foydalanuvchi topilmadi');
     }
     if (user._count.courses) {
       throw new BadRequestException(
-        `User has ${user._count.courses} published courses. Please change these courses' author first to delete`,
+        `Foydaluvchida ${user._count.courses} ta tasdiqlangan kurslar mavjud. Iltimos, o'chirish uchun kursning yaratuvchisi o'zgartiring !`,
       );
     }
     if (user._count.purchasedCourses) {
       throw new BadRequestException(
-        'User has purchased courses! You cannot delete user',
+        'Foydaluvchida sotib olingan kurslar mavjud! Foydaluvchini o`chirish imkoniyati yo`q',
       );
     }
-    await this.prisma.user.update({ where: { id }, data: { status: Status.INACTIVE } });
+    await this.prisma.user.delete({ where: { id }});
     return {
       success: true,
-      message: 'User deleted',
+      message: 'Foydalanuvchi o`chirildi',
     };
   }
 }

@@ -1,6 +1,7 @@
 import { PaginationDto } from '../../../global/dto/pagination.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBooleanString, IsOptional } from 'class-validator';
+import { uzMsg } from '../../../global/validation-messages';
 
 export class FetchGroupsDto extends PaginationDto {
   @ApiProperty({
@@ -9,6 +10,6 @@ export class FetchGroupsDto extends PaginationDto {
     type: 'boolean',
   })
   @IsOptional()
-  @IsBooleanString()
+  @IsBooleanString({ message: uzMsg.isBooleanString("Darslarni ko'rsatish") })
   include_lessons?: 'true' | 'false';
 }

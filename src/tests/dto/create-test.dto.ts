@@ -10,58 +10,59 @@ import {
 } from 'class-validator';
 import { TestAnswer } from '@prisma/client';
 import { Type } from 'class-transformer';
+import { uzMsg } from '../../global/validation-messages';
 
 export class CreateTestDto {
   @ApiProperty({
     example: 'What does DOM mean in JavaScript?',
   })
-  @IsString()
-  @MaxLength(800)
+  @IsString({ message: uzMsg.isString('Savol') })
+  @MaxLength(800, { message: uzMsg.maxLength('Savol', 800) })
   question: string;
 
   @ApiProperty()
-  @IsString()
+  @IsString({ message: uzMsg.isString('Dars ID') })
   lessonId: string;
 
   @ApiProperty({
     example: 'Direct Object Module',
   })
-  @IsString()
-  @MaxLength(400)
+  @IsString({ message: uzMsg.isString('A varianti') })
+  @MaxLength(400, { message: uzMsg.maxLength('A varianti', 400) })
   variantA: string;
 
   @ApiProperty({
     example: 'Digital Object Module',
   })
-  @IsString()
-  @MaxLength(400)
+  @IsString({ message: uzMsg.isString('B varianti') })
+  @MaxLength(400, { message: uzMsg.maxLength('B varianti', 400) })
   variantB: string;
 
   @ApiProperty({
     example: 'Document Object Model',
   })
-  @IsString()
-  @MaxLength(400)
+  @IsString({ message: uzMsg.isString('C varianti') })
+  @MaxLength(400, { message: uzMsg.maxLength('C varianti', 400) })
   variantC: string;
 
   @ApiProperty({
     example: 'Document Object Module',
   })
-  @IsString()
-  @MaxLength(400)
+  @IsString({ message: uzMsg.isString('D varianti') })
+  @MaxLength(400, { message: uzMsg.maxLength('D varianti', 400) })
   variantD: string;
 
   @ApiProperty({
     enum: TestAnswer,
     example: TestAnswer.variantC,
   })
-  @IsEnum(TestAnswer)
+  @IsEnum(TestAnswer, { message: uzMsg.isEnum("To'g'ri javob") })
   answer: TestAnswer;
 }
 
 export class CreateManyTestDto {
   @ApiProperty()
-  @IsString()
+  @IsString({ message: uzMsg.isString('Dars ID') })
   lessonId: string;
 
   @ApiProperty({
@@ -77,9 +78,9 @@ export class CreateManyTestDto {
       },
     ],
   })
-  @IsArray()
+  @IsArray({ message: uzMsg.isArray('Testlar') })
   @ValidateNested({ each: true })
-  @ArrayMinSize(1)
+  @ArrayMinSize(1, { message: uzMsg.arrayMinSize('Testlar', 1) })
   @Type(() => OmitType(CreateTestDto, ['lessonId']))
   tests: Omit<CreateTestDto, 'lessonId'>[];
 }

@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
+import { uzMsg } from '../../global/validation-messages';
 
 export class UpdateProfileDto {
   @ApiProperty({
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: uzMsg.isString("To'liq ism") })
   fullName?: string;
 
   @ApiProperty({

@@ -6,19 +6,20 @@ import {
   IsNumberString,
   IsOptional,
 } from 'class-validator';
+import { uzMsg } from '../../global/validation-messages';
 
 export class FetchTestResultsDto extends PaginationDto {
   @ApiProperty({
     required: false,
   })
-  @IsNumberString()
+  @IsNumberString({}, { message: uzMsg.isNumberString('Guruh ID') })
   @IsOptional()
   lesson_group_id?: string;
 
   @ApiProperty({
     required: false,
   })
-  @IsNumberString()
+  @IsNumberString({}, { message: uzMsg.isNumberString('Foydalanuvchi ID') })
   @IsOptional()
   user_id?: string;
 
@@ -26,7 +27,7 @@ export class FetchTestResultsDto extends PaginationDto {
     required: false,
     type: 'boolean',
   })
-  @IsBooleanString()
+  @IsBooleanString({ message: uzMsg.isBooleanString("O'tgan holati") })
   @IsOptional()
   passed?: 'true' | 'false';
 
@@ -34,7 +35,7 @@ export class FetchTestResultsDto extends PaginationDto {
     required: false,
     description: 'Format: yyyy-mm-dd',
   })
-  @IsDateString()
+  @IsDateString({}, { message: uzMsg.isDateString('Sanadan') })
   @IsOptional()
   date_from?: string;
 
@@ -42,7 +43,7 @@ export class FetchTestResultsDto extends PaginationDto {
     required: false,
     description: 'Format: yyyy-mm-dd',
   })
-  @IsDateString()
+  @IsDateString({}, { message: uzMsg.isDateString('Sanagacha') })
   @IsOptional()
   date_to?: string;
 }

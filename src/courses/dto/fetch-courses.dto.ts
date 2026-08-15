@@ -11,13 +11,14 @@ import {
 } from 'class-validator';
 import { CourseLevel } from '../../types/course';
 import { Transform } from 'class-transformer';
+import { uzMsg } from '../../global/validation-messages';
 
 export class FetchCoursesDto extends PaginationDto {
   @ApiProperty({
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: uzMsg.isString('Qidiruv') })
   search?: string;
 
   @ApiProperty({
@@ -25,20 +26,20 @@ export class FetchCoursesDto extends PaginationDto {
     enum: CourseLevel,
   })
   @IsOptional()
-  @IsEnum(CourseLevel)
+  @IsEnum(CourseLevel, { message: uzMsg.isEnum('Daraja') })
   level?: CourseLevel;
 
   @ApiProperty({
     required: false,
   })
   @IsOptional()
-  @IsNumberString()
+  @IsNumberString({}, { message: uzMsg.isNumberString('Kategoriya') })
   category_id?: string;
 
   @ApiProperty({
     required: false,
   })
-  @IsNumberString()
+  @IsNumberString({}, { message: uzMsg.isNumberString('Mentor') })
   @IsOptional()
   mentor_id?: string;
 
@@ -46,8 +47,8 @@ export class FetchCoursesDto extends PaginationDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
-  @Min(0)
+  @IsNumber({}, { message: uzMsg.isNumber('Minimal narx') })
+  @Min(0, { message: uzMsg.min('Minimal narx', 0) })
   @Transform((val) => +val?.value)
   price_min?: string;
 
@@ -55,8 +56,8 @@ export class FetchCoursesDto extends PaginationDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
-  @Min(1)
+  @IsNumber({}, { message: uzMsg.isNumber('Maksimal narx') })
+  @Min(1, { message: uzMsg.min('Maksimal narx', 1) })
   @Transform((val) => +val?.value)
   price_max?: string;
 }
@@ -66,7 +67,7 @@ export class FetchUserCourses extends FetchCoursesDto {
     required: false,
     type: 'boolean',
   })
-  @IsBooleanString()
+  @IsBooleanString({ message: uzMsg.isBooleanString('Nashr qilingan holati') })
   @IsOptional()
   published?: 'true' | 'false';
 }
