@@ -16,7 +16,7 @@ export class CreateUserDto {
     example: 'Adminov Adminjon',
   })
   @IsString()
-  @MinLength(5)
+  @MinLength(3)
   fullName: string;
 
   @ApiProperty()
