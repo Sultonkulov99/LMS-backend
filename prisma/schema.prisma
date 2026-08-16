@@ -241,6 +241,7 @@ model HomeworkSubmission {
 model Test {
   id        Int        @id @default(autoincrement())
   question  String
+  image     String?
   variantA  String
   variantB  String
   variantC  String
@@ -290,7 +291,6 @@ model QuestionAnswer {
   createdAt  DateTime  @default(now())
 }
 
-
 enum NotificationType {
   NEW_QUESTION
   NEW_ANSWER
@@ -305,8 +305,8 @@ model Notification {
   user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type       NotificationType
   message    String
-  entityType String?          // "question" | "homework" | ...
-  entityId   String?          // Question.id, Homework.id va h.k. (stringga cast qilib saqlanadi)
+  entityType String? // "question" | "homework" | ...
+  entityId   String? // Question.id, Homework.id va h.k. (stringga cast qilib saqlanadi)
   read       Boolean          @default(false)
   readAt     DateTime?
   createdAt  DateTime         @default(now())

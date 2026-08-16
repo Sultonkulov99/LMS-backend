@@ -18,13 +18,16 @@ import {
 } from './dto/fetch-test-results.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { LessonsService } from 'src/lessons/lessons.service';
+import { FilesService } from 'src/files/files.service';
+import { EFileType } from 'src/types/files';
 
 @Injectable()
 export class TestsService {
   constructor(
     private prisma: PrismaService,
     private lessonService: LessonsService,
-  ) {}
+    private fileService: FilesService,
+  ) { }
 
   private async checkIsNotPassed(lessonId: string, authUser: TAuthUser) {
     const passed = await this.prisma.testResult.findFirst({
@@ -53,6 +56,7 @@ export class TestsService {
       select: {
         id: true,
         question: true,
+        image: true,
         variantA: true,
         variantB: true,
         variantC: true,
@@ -113,6 +117,12 @@ export class TestsService {
 
   async createTest(payload: CreateTestDto, authUser: TAuthUser) {
     await this.lessonService.getSingleLesson(payload.lessonId);
+    if (payload.image) {
+      payload.image = await this.fileService.saveFile(
+        payload.image as Express.Multer.File,
+        EFileType.COURSE_CONTENT,
+      );
+    }
     return this.prisma.test.create({
       data: payload,
     });
@@ -120,10 +130,18 @@ export class TestsService {
 
   async createManyTest(payload: CreateManyTestDto, authUser: TAuthUser) {
     await this.lessonService.getSingleLesson(payload.lessonId);
-    const data = payload.tests.map((t) => ({
-      ...t,
-      lessonId: payload.lessonId,
-    }));
+    const data = await Promise.all(
+      payload.tests.map(async (t) => ({
+        ...t,
+        image: t.image
+          ? await this.fileService.saveFile(
+            t.image as Express.Multer.File,
+            EFileType.COURSE_CONTENT,
+          )
+          : t.image,
+        lessonId: payload.lessonId,
+      })),
+    );
     return this.prisma.test.createMany({
       data,
     });
@@ -142,9 +160,18 @@ export class TestsService {
 
   async updateTest(id: number, payload: UpdateTestDto, authUser: TAuthUser) {
     const test = await this.getDetail(id, authUser);
+
+    if (payload.image) {
+      payload.image = await this.fileService.saveFile(
+        payload.image as Express.Multer.File,
+        EFileType.COURSE_CONTENT,
+      );
+    }
+
     return this.prisma.test.update({
       where: { id },
       data: {
+        image: payload?.image || test.image,
         question: payload?.question || test.question,
         variantA: payload?.variantA || test.variantA,
         variantB: payload?.variantB || test.variantB,
