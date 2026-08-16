@@ -4,12 +4,13 @@ import {
   IsArray,
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
   MaxLength,
   ValidateNested,
 } from 'class-validator';
 import { TestAnswer } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { uzMsg } from '../../global/validation-messages';
 
 export class CreateTestDto {
@@ -19,6 +20,15 @@ export class CreateTestDto {
   @IsString({ message: uzMsg.isString('Savol') })
   @MaxLength(800, { message: uzMsg.maxLength('Savol', 800) })
   question: string;
+
+  @ApiProperty({
+    required: false,
+    type: 'string',
+    nullable: true,
+    format: 'binary',
+  })
+  @IsOptional()
+  image: any;
 
   @ApiProperty()
   @IsString({ message: uzMsg.isString('Dars ID') })
@@ -69,6 +79,7 @@ export class CreateManyTestDto {
     isArray: true,
     example: [
       {
+        image: 'question.png (OPTIONAL)',
         question: 'What does DOM mean in JavaScript?',
         variantA: 'Direct Object Module',
         variantB: 'Document Object Model',
@@ -77,6 +88,16 @@ export class CreateManyTestDto {
         answer: 'variantC',
       },
     ],
+  })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
+    }
+    return value;
   })
   @IsArray({ message: uzMsg.isArray('Testlar') })
   @ValidateNested({ each: true })
