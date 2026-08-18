@@ -9,6 +9,7 @@ import { UserRole } from '../types/user';
 import { PurchasedCourseGuard } from '../purchased-courses/guards/purchased-course.guard';
 import { LessonTestGuard } from '../tests/guards/lesson-test.guard';
 import { PrivateLessonFileParamDto } from './dto/private-lesson-file.dto';
+import { lookup } from 'mime-types';
 
 @ApiTags('Files')
 @Controller('files')
@@ -17,6 +18,8 @@ export class FilesController {
 
   @Get('public/:name')
   streamPublicFile(@Param('name') name: string, @Res() res) {
+    const mimeType = lookup(name) || 'application/octet-stream';
+    res.setHeader('Content-Type', mimeType);
     const file = this.filesService.streamPublicFile(name);
     return file.pipe(res);
   }
@@ -29,6 +32,8 @@ export class FilesController {
   })
   @Get('private/lesson-file/:lessonId/:name')
   streamLessonFile(@Param() params: PrivateLessonFileParamDto, @Res() res) {
+    const mimeType = lookup(params.name) || 'application/octet-stream';
+    res.setHeader('Content-Type', mimeType);
     const file = this.filesService.streamLessonFile(params.name);
     return file.pipe(res);
   }
