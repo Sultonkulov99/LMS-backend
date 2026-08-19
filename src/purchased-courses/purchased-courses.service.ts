@@ -189,6 +189,7 @@ export class PurchasedCoursesService {
               id: true,
               fullName: true,
               image: true,
+              phone: true,
             },
           },
           course: {
