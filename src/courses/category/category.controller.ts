@@ -47,11 +47,11 @@ export class CourseCategoryController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}, ${UserRole.MENTOR}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.MENTOR])
   @Put(':id')
   updateCategory(
     @Body() payload: UpdateCourseCategoryDto,
@@ -61,11 +61,11 @@ export class CourseCategoryController {
   }
 
   @ApiOperation({
-    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
+    summary: `${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}, ${UserRole.MENTOR}`,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN])
+  @Roles([UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.MENTOR])
   @Delete(':id')
   deleteCategory(@Param('id', ParseIntPipe) id: number) {
     return this.categoryService.deleteCategory(id);
