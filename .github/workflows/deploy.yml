@@ -16,16 +16,15 @@ jobs:
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
           script: |
             set -e
             mkdir -p /var/www/lms/backend
             cd /var/www/lms/backend
 
-            # Git orqali kodni tortib olish (Sultonkulov99/LMS-backend)
             if [ ! -d ".git" ]; then
               git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git .
             else
@@ -34,10 +33,7 @@ jobs:
               git pull origin main
             fi
 
-            # Konteynerlarni qayta qurish va ishga tushirish
             docker compose down --remove-orphans || true
             docker compose build --no-cache
             docker compose up -d
-
-            # Eski keraksiz imagelarni tozalash
             docker image prune -f
