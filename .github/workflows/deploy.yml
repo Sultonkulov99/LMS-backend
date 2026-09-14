@@ -1,4 +1,4 @@
-name: Deploy Backend to Server
+name: Deploy LMS Backend to VPS
 
 on:
   push:
@@ -10,19 +10,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy to VPS via SSH
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 30m
           script: |
-            cd /var/www/backend
-            git pull origin main
-            docker compose down
+            set -e
+            echo "📁 Preparing app folder..."
+            mkdir -p /var/www/lms/backend
+            cd /var/www/lms/backend
+
+            if [ ! -d ".git" ]; then
+              echo "📥 Cloning repository..."
+              git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git .
+            else
+              echo "♻️ Pulling latest code..."
+              git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git
+              git reset --hard
+              git clean -fd
+              git pull origin main
+            fi
+
+            echo "🛑 Stopping old containers..."
+            docker compose down --remove-orphans || true
+
+            echo "🛠️ Building and starting..."
             docker compose build --no-cache
             docker compose up -d
+
+            echo "🧹 Cleaning up..."
+            docker builder prune -f
             docker image prune -f
+
+            echo "✅ LMS Backend deploy finished!"
+            docker compose logs --tail=30 app
