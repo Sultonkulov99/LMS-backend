@@ -38,4 +38,4 @@ COPY --from=builder /app/dist ./dist
 EXPOSE 3000
 
 # Bazani migratsiya qilish va ilovani ishga tushirish
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
