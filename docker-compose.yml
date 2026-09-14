@@ -21,7 +21,7 @@ services:
     image: redis:7-alpine
     container_name: redis_cache
     restart: always
-    command: redis-server --requirepass 12345`
+    command: ["redis-server", "--requirepass", "12345"]
     ports:
       - "6379:6379"
     healthcheck:
