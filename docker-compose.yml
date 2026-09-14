@@ -1,20 +1,18 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: lms
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U myuser -d mydb"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lms"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -23,10 +21,11 @@ services:
     image: redis:7-alpine
     container_name: redis_cache
     restart: always
+    command: redis-server --requirepass 12345`
     ports:
       - "6379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "12345", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -40,9 +39,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: "postgresql://myuser:mypassword@postgres:5432/mydb?schema=public"
+      DATABASE_URL: "postgresql://postgres:12345@postgres:5432/lms?schema=public"
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      REDIS_PASSWORD: 12345
       NODE_ENV: production
       PORT: 3000
     depends_on:
