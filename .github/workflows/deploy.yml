@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy LMS Backend
 
 on:
   push:
@@ -13,46 +13,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy over SSH
+      - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             set -e
+            mkdir -p /var/www/lms/backend
+            cd /var/www/lms/backend
 
-            echo "===== DEPLOY START ====="
-
-            cd /home/ubuntu
-
-            if [ ! -d "/home/ubuntu/LMS-backend/.git" ]; then
-              echo "Repository not found. Cloning..."
-              rm -rf /home/ubuntu/LMS-backend
-              git clone https://github.com/Sultonkulov99/LMS-backend.git /home/ubuntu/LMS-backend
+            # Git orqali kodni tortib olish (Sultonkulov99/LMS-backend)
+            if [ ! -d ".git" ]; then
+              git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git .
             else
-              echo "Repository exists. Pulling latest changes..."
-              cd /home/ubuntu/LMS-backend
-              git fetch origin main
-              git reset --hard origin/main
+              git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git
+              git reset --hard
+              git pull origin main
             fi
 
-            cd /home/ubuntu/LMS-backend
-
-            echo "===== CURRENT COMMIT ====="
-            git log -1 --oneline
-
-            echo "===== STOPPING CONTAINERS ====="
-            docker compose down
-
-            echo "===== BUILDING ====="
+            # Konteynerlarni qayta qurish va ishga tushirish
+            docker compose down --remove-orphans || true
             docker compose build --no-cache
-
-            echo "===== STARTING ====="
             docker compose up -d
 
-            echo "===== CONTAINERS ====="
-            docker compose ps
-
-            echo "===== DEPLOY FINISHED ====="
+            # Eski keraksiz imagelarni tozalash
+            docker image prune -f
