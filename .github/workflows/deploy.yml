@@ -1,4 +1,4 @@
-name: Deploy LMS Backend
+name: Deploy Backend to Server
 
 on:
   push:
@@ -10,30 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            set -e
-            mkdir -p /var/www/lms/backend
-            cd /var/www/lms/backend
-
-            if [ ! -d ".git" ]; then
-              git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git .
-            else
-              git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git
-              git reset --hard
-              git pull origin main
-            fi
-
-            docker compose down --remove-orphans || true
+            cd /var/www/backend
+            git pull origin main
+            docker compose down
             docker compose build --no-cache
             docker compose up -d
             docker image prune -f
