@@ -38,6 +38,8 @@ services:
     restart: always
     ports:
       - "3000:9000"
+    volumes:
+      - ./uploads:/app/uploads
     env_file:
       - .env
     environment:
