@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import Redis from 'ioredis';
 
 @Injectable()
@@ -9,13 +9,14 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     this.client = new Redis({
       host: process.env.REDIS_HOST || 'localhost', // docker service name
       port: Number(process.env.REDIS_PORT || 6379),
-      
-      lazyConnect: true, // ⚠️ app yiqilmasin 
+      password: process.env.REDIS_PASSWORD || undefined,
+
+      lazyConnect: true,
       retryStrategy(times) {
         if (times > 5) {
           console.error('❌ Redis reconnect stopped');
-          return null; // reconnectni to‘xtat
-        } 
+          return null;
+        }
         return Math.min(times * 300, 3000);
       },
     });
