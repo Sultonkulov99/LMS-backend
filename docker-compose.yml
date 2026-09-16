@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -28,6 +30,8 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - lms-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d lms"]
       interval: 5s
@@ -55,6 +59,8 @@ services:
       --appendonly no
     ports:
       - "6379:6379"
+    networks:
+      - lms-net
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "12345", "ping"]
       interval: 5s
@@ -89,13 +95,15 @@ services:
       REDIS_DB: 0
       CORS: "*"
       NODE_ENV: production
-      PORT: 3000
+      PORT: 9000
       NODE_OPTIONS: "--max-old-space-size=256"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+    networks:
+      - lms-net
     logging:
       driver: json-file
       options:
@@ -104,3 +112,7 @@ services:
 
 volumes:
   pgdata:
+
+networks:
+  lms-net:
+    driver: bridge

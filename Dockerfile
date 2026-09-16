@@ -1,4 +1,3 @@
-# 1. Build bosqichi
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
@@ -9,7 +8,6 @@ RUN npx prisma generate
 COPY . .
 RUN npm run build --if-present
 
-# 2. Production bosqichi
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
@@ -34,4 +32,5 @@ USER nodeuser
 
 EXPOSE 3000
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
+
+CMD ["sh", -c", "npx prisma migrate deploy && node dist/src/main.js"]
