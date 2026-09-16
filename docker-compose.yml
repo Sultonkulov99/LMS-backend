@@ -3,10 +3,27 @@ services:
     image: postgres:16-alpine
     container_name: postgres_db
     restart: always
+    mem_limit: 400m
+    mem_reservation: 200m
+    cpus: 1.0
+    shm_size: 128mb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
       POSTGRES_DB: lms
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c effective_cache_size=384MB
+      -c maintenance_work_mem=32MB
+      -c work_mem=4MB
+      -c max_connections=50
+      -c wal_buffers=8MB
+      -c min_wal_size=80MB
+      -c max_wal_size=1GB
+      -c checkpoint_completion_target=0.9
+      -c random_page_cost=1.1
+      -c log_min_duration_statement=1000
     ports:
       - "5432:5432"
     volumes:
@@ -16,12 +33,26 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   redis:
     image: redis:7-alpine
     container_name: redis_cache
     restart: always
-    command: ["redis-server", "--requirepass", "12345"]
+    mem_limit: 150m
+    mem_reservation: 64m
+    cpus: 0.5
+    command: >
+      redis-server
+      --requirepass 12345
+      --maxmemory 100mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
     ports:
       - "6379:6379"
     healthcheck:
@@ -29,6 +60,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
 
   app:
     build:
@@ -36,10 +72,13 @@ services:
       dockerfile: Dockerfile
     container_name: backend_app
     restart: always
+    mem_limit: 350m
+    mem_reservation: 150m
+    cpus: 1.0
     ports:
       - "3000:9000"
     volumes:
-      - ./uploads:/app/uploads
+      - /var/www/lms/uploads:/app/uploads
     env_file:
       - .env
     environment:
@@ -51,11 +90,17 @@ services:
       CORS: "*"
       NODE_ENV: production
       PORT: 3000
+      NODE_OPTIONS: "--max-old-space-size=256"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   pgdata:
