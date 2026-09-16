@@ -33,4 +33,4 @@ USER nodeuser
 EXPOSE 3000
 ENTRYPOINT ["/sbin/tini", "--"]
 
-CMD ["sh", -c", "npx prisma migrate deploy && node dist/src/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
