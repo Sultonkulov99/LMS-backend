@@ -16,14 +16,6 @@ enum UserRole {
   STUDENT
 }
 
-enum CourseLevel {
-  BEGINNER
-  PRE_INTERMEDIATE
-  INTERMEDIATE
-  UPPER_INTERMEDIATE
-  ADVANCED
-}
-
 enum PaidVia {
   PAYME
   CLICK
@@ -114,14 +106,6 @@ model LastActivity {
   updatedAt DateTime? @updatedAt
 }
 
-model CourseCategory {
-  id        Int      @id @default(autoincrement())
-  name      String
-  status    Status   @default(ACTIVE)
-  createdAt DateTime @default(now())
-  courses   Course[]
-}
-
 model Course {
   id           String            @id @default(uuid())
   name         String
@@ -129,10 +113,7 @@ model Course {
   price        Decimal
   banner       String
   introVideo   String?
-  level        CourseLevel
   published    Boolean           @default(false)
-  categoryId   Int
-  category     CourseCategory    @relation(fields: [categoryId], references: [id])
   mentorId     Int
   mentor       User              @relation(fields: [mentorId], references: [id])
   lessonGroups LessonGroup[]

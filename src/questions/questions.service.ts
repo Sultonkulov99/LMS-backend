@@ -125,7 +125,7 @@ export class QuestionsService {
       where: this.getCourseWhereOwns(authUser, courseId),
     });
     if (!course) {
-      throw new NotFoundException('Course not found');
+      throw new NotFoundException('Kurs topilmadi');
     }
     const where = {
       courseId,
@@ -170,7 +170,7 @@ export class QuestionsService {
       select: simpleSelect ? undefined : this.$selectQuestionWithAnswer,
     });
     if (!question) {
-      throw new NotFoundException('Question not found');
+      throw new NotFoundException('Savol topilmadi');
     }
     return question;
   }
@@ -227,7 +227,7 @@ export class QuestionsService {
   ) {
     const question = await this.fetchSingle(id, authUser);
     if (question?.answer) {
-      throw new BadRequestException("You can't update answered question");
+      throw new BadRequestException("Javob berilgan savolni o'zgartira olmaysiz");
     }
     if (question.file && payload?.file) {
       this.filesService.deleteFile(question.file, EFileType.PUBLIC_FILE);
@@ -305,7 +305,7 @@ export class QuestionsService {
       },
     });
     if (!answer) {
-      throw new NotFoundException('Question Answer not found!');
+      throw new NotFoundException('Savolning javobi topilmadi!');
     }
     return answer;
   }
@@ -341,7 +341,7 @@ export class QuestionsService {
       this.filesService.deleteFile(answer.file, EFileType.PUBLIC_FILE);
     }
     await this.prisma.questionAnswer.delete({ where: { id } });
-    return { ok: true, message: 'Answer deleted' };
+    return { ok: true, message: "Javob o'chirildi" };
   }
 
   async deleteQuestion(id: number, authUser: TAuthUser) {
@@ -360,7 +360,7 @@ export class QuestionsService {
     });
     return {
       ok: true,
-      message: 'Question deleted',
+      message: "Savol o'chirildi",
     };
   }
 }

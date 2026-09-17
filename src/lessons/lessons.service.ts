@@ -32,7 +32,7 @@ export class LessonsService {
       },
     });
     if (!lesson) {
-      throw new NotFoundException(`Lesson with id "${id}" not found`);
+      throw new NotFoundException(`"${id}" id li dars not topilmadi`);
     }
     return lesson;
   }
@@ -81,7 +81,7 @@ export class LessonsService {
     }
     const lesson = await this.prisma.lesson.findUnique(args);
     if (!lesson) {
-      throw new HttpException('Lesson not found!', HttpStatus.NOT_FOUND);
+      throw new HttpException('Dars topilmadi!', HttpStatus.NOT_FOUND);
     }
     return lesson;
   }
@@ -147,6 +147,6 @@ export class LessonsService {
     await this.prisma.lesson.delete({
       where: { id },
     });
-    return { success: true, message: 'Lesson deleted' };
+    return { success: true, message: "Dars o'chirildi" };
   }
 }

@@ -30,16 +30,9 @@ export class CoursesService {
     name: true,
     about: true,
     banner: true,
-    level: true,
     published: true,
     price: true,
     createdAt: true,
-    category: {
-      select: {
-        id: true,
-        name: true,
-      },
-    },
   };
 
   private generateCourseQuery(query: FetchUserCourses) {
@@ -51,16 +44,6 @@ export class CoursesService {
         name: {
           search: query?.search.replace(/\s/g, ' | '),
         },
-      });
-    }
-    if (query?.level) {
-      Object.assign(pquery.where, {
-        level: query?.level,
-      });
-    }
-    if (query?.category_id) {
-      Object.assign(pquery.where, {
-        categoryId: +query?.category_id,
       });
     }
     // if (query?.published) {
@@ -87,7 +70,7 @@ export class CoursesService {
   async getCourses(
     query: FetchCoursesDto,
   ): PromiseManyData<
-    Pick<Course, 'id' | 'name' | 'banner' | 'level' | 'price' | 'createdAt'>
+    Pick<Course, 'id' | 'name' | 'banner' | 'price' | 'createdAt'>
   > {
     const pquery = this.generateCourseQuery({ ...query, published: 'true' });
     const [data, total] = await this.prisma.$transaction([
@@ -176,7 +159,7 @@ export class CoursesService {
       },
     });
     if (!course) {
-      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Kurs topilmadi', HttpStatus.NOT_FOUND);
     }
     return course;
   }
@@ -188,7 +171,7 @@ export class CoursesService {
   ): PromiseManyData<
     Pick<
       Course,
-      'id' | 'name' | 'banner' | 'level' | 'price' | 'published' | 'createdAt'
+      'id' | 'name' | 'banner' | 'price' | 'published' | 'createdAt'
     >
   > {
     if (!mine) {
@@ -201,7 +184,7 @@ export class CoursesService {
         },
       });
       if (!mentor) {
-        throw new NotFoundException('Mentor not found');
+        throw new NotFoundException('Mentor topilmadi');
       }
     }
     const pquery = this.generateCourseQuery(query);
@@ -252,12 +235,6 @@ export class CoursesService {
   }
 
   async createCourse(payload: CreateCourseDto, authUser: TAuthUser) {
-    const category = await this.prisma.courseCategory.findUnique({
-      where: { id: +payload.categoryId },
-    });
-    if (!category) {
-      throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
-    }
     payload.banner = await this.filesService.saveFile(
       payload.banner as Express.Multer.File,
       EFileType.PUBLIC_FILE,
@@ -273,8 +250,6 @@ export class CoursesService {
         name: payload.name,
         about: payload.about,
         price: +payload.price,
-        level: payload.level,
-        categoryId: +payload.categoryId,
         mentorId: authUser.id,
         banner: payload.banner,
         introVideo: payload.introVideo,
@@ -296,18 +271,7 @@ export class CoursesService {
       !course ||
       (authUser.role === UserRole.MENTOR && authUser.id !== course?.mentorId)
     ) {
-      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
-    }
-    if (payload?.categoryId) {
-      const category = await this.prisma.courseCategory.findUnique({
-        where: { id: +payload.categoryId },
-      });
-      if (!category) {
-        throw new HttpException(
-          'Course Category not found',
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      throw new HttpException('Kurs topilmadi', HttpStatus.NOT_FOUND);
     }
     if (payload?.banner) {
       this.filesService.deleteFile(course.banner, EFileType.PUBLIC_FILE);
@@ -329,8 +293,6 @@ export class CoursesService {
         name: payload?.name || course.name,
         about: payload?.about || course.about,
         price: +payload?.price || course.price,
-        level: payload?.level || course.level,
-        categoryId: +payload?.categoryId || course.categoryId,
         banner: payload?.banner || course.banner,
         introVideo: payload?.introVideo || course.introVideo,
         updatedAt: new Date(),
@@ -356,7 +318,7 @@ export class CoursesService {
     });
     return {
       success: true,
-      message: 'Course ' + (published ? 'published' : 'unpublished'),
+      message: 'Kurs ' + (published ? 'faollashtirildi' : 'faolsizlantirildi'),
     };
   }
 
@@ -366,7 +328,7 @@ export class CoursesService {
       where: { id: payload.userId, role: UserRole.MENTOR },
     });
     if (!mentor) {
-      throw new NotFoundException('Mentor not found');
+      throw new NotFoundException('Mentor topilmadi');
     }
     await this.prisma.course.update({
       where: { id: payload.courseId },
@@ -375,7 +337,7 @@ export class CoursesService {
         updatedAt: new Date(),
       },
     });
-    return { success: true, message: 'Course mentor updated' };
+    return { success: true, message: 'Kurs mentori yangilandi' };
   }
 
   async getMyAssignedCourses(
@@ -384,7 +346,7 @@ export class CoursesService {
   ): PromiseManyData<
     Pick<
       Course,
-      'id' | 'name' | 'banner' | 'level' | 'price' | 'published' | 'createdAt'
+      'id' | 'name' | 'banner' | 'price' | 'published' | 'createdAt'
     >
   > {
     const pquery = this.generateCourseQuery(query);
@@ -425,7 +387,7 @@ export class CoursesService {
       },
     });
     if (!course) {
-      throw new NotFoundException('Course not found');
+      throw new NotFoundException('Kurs topilmadi');
     }
   }
 
@@ -473,11 +435,11 @@ export class CoursesService {
       },
     });
     if (!user) {
-      throw new NotFoundException('Assistant not found');
+      throw new NotFoundException('Assistant topilmadi');
     }
     if (user._count.assignedCourses) {
       throw new BadRequestException(
-        'This course already assigned to assistant',
+        'Bu kurs allaqachon yordamchiga biriktirilgan',
       );
     }
     return this.prisma.assignedCourse.create({
@@ -499,7 +461,7 @@ export class CoursesService {
       },
     });
     if (!assignedCourse) {
-      throw new NotFoundException('Assigned Course not found');
+      throw new NotFoundException('Biriktirilgan kurs topilmadi');
     }
     await this.prisma.assignedCourse.delete({
       where: {
@@ -511,7 +473,7 @@ export class CoursesService {
     });
     return {
       success: true,
-      message: 'Assigned Course deleted',
+      message: 'Biriktirilgan kurs ochirildi',
     };
   }
 
@@ -531,19 +493,19 @@ export class CoursesService {
       },
     });
     if (!course) {
-      throw new NotFoundException('Course not found');
+      throw new NotFoundException('Kurs topilmadi');
     }
     if (course.published) {
-      throw new BadRequestException('You cannot delete published course');
+      throw new BadRequestException("Faol kursni o'chira olmaysiz");
     }
     if (course._count.purchases) {
       throw new BadRequestException(
-        'You cannot delete course when it has purchases',
+        "Sotib olingan kurslarni o'chira olmaysiz",
       );
     }
     if (course._count.lessonGroups) {
       throw new BadRequestException(
-        'You cannot delete course when it has Lesson Groups',
+        "Bo'limi bo'lgan kurslarni o'chira olmaysiz",
       );
     }
 
@@ -555,6 +517,6 @@ export class CoursesService {
     await this.prisma.course.delete({
       where: { id },
     });
-    return { success: true, message: 'Course deleted' };
+    return { success: true, message: "Kurs o'chirildi" };
   }
 }

@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsNumber,
-  IsNumberString,
-  IsString,
-  MaxLength,
-} from 'class-validator';
-import { CourseLevel } from '../../types/course';
+import { IsNumberString, IsString, MaxLength } from 'class-validator';
 import { uzMsg } from '../../global/validation-messages';
 
 export class CreateCourseDto {
@@ -29,19 +22,6 @@ export class CreateCourseDto {
   })
   @IsNumberString({}, { message: uzMsg.isNumberString('Narx') })
   price: number | string;
-
-  @ApiProperty({
-    enum: CourseLevel,
-  })
-  @IsEnum(CourseLevel, { message: uzMsg.isEnum('Daraja') })
-  level: CourseLevel;
-
-  @ApiProperty({
-    example: 2,
-    format: 'string',
-  })
-  @IsNumberString({}, { message: uzMsg.isNumberString('Kategoriya') })
-  categoryId: string | number;
 
   @ApiProperty({
     required: true,

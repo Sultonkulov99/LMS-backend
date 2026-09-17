@@ -115,7 +115,7 @@ export class FilesService {
     const fileDes = path.join(this.getFileDir(fileType), fileName);
     const exists = fs.existsSync(fileDes);
     if (!exists) {
-      throw new NotFoundException('File not found');
+      throw new NotFoundException('File topilmadi');
     }
     return fileDes;
   }

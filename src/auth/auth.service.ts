@@ -77,15 +77,15 @@ export class AuthService {
       }
     });
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException("Login yoki parol hato");
     }
 
     if (!await checkPassword(password, user.password)) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("Login yoki parol hato");
     }
     
     if (user.role === UserRole.STUDENT && user.purchasedCourses[0].status !== PaymentStatus.COMPLETED) {
-      throw new ForbiddenException();
+      throw new ForbiddenException("Foydalanuvchida sotib olingan kurslar mavjud emas");
     }
 
     return user;
@@ -192,7 +192,7 @@ export class AuthService {
       return this.generateTokens(user, true);
     } catch {
       throw new HttpException(
-        'Invalid token or token expired',
+        "Noto'g'ri token yoki token muddati o'tgan",
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -216,7 +216,7 @@ export class AuthService {
     });
     return {
       success: true,
-      message: 'New password successfully set',
+      message: 'Yangi parol muvaffaqiyatli yaratildi',
     };
   }
 }

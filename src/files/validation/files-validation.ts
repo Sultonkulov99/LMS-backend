@@ -148,7 +148,7 @@ export class FilesValidation implements PipeTransform {
       const mimeRegex = this.mimeTypes[validation.type];
       if (!mimeRegex.test(mime)) {
         throw new HttpException(
-          `Invalid file type for "${fieldName}"! Only ${validation.type} files are allowed`,
+          `"${fieldName}" uchun noto'g'ri format! Faqat ${validation.type} file lar qabul qilinadi`,
           HttpStatus.UNSUPPORTED_MEDIA_TYPE,
         );
       }
