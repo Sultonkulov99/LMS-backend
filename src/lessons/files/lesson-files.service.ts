@@ -66,13 +66,13 @@ export class LessonFilesService {
       },
     });
     if (!file) {
-      throw new HttpException('Lesson File not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Dars fayli topilmadi', HttpStatus.NOT_FOUND);
     }
     await this.lessonsService.getDetail(file.lessonId, authUser);
     this.filesService.deleteFile(file.file, EFileType.COURSE_CONTENT);
     await this.prisma.lessonFile.delete({
       where: { id },
     });
-    return { success: true, message: 'Lesson File deleted' };
+    return { success: true, message: "Dars fayli o'chirildi" };
   }
 }

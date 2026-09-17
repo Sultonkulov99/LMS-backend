@@ -18,7 +18,7 @@ export class PurchasedCoursesService {
   async getMyCourses(
     query: FetchPurchasedCoursesDto,
     authUser: TAuthUser,
-  ): PromiseManyData<Pick<Course, 'id' | 'name' | 'banner' | 'level'>> {
+  ): PromiseManyData<Pick<Course, 'id' | 'name' | 'banner'>> {
     const pquery = {
       where: {
         purchases: {
@@ -36,16 +36,6 @@ export class PurchasedCoursesService {
         },
       });
     }
-    if (query.category_id) {
-      Object.assign(pquery.where, {
-        categoryId: +query.category_id,
-      });
-    }
-    if (query.level) {
-      Object.assign(pquery.where, {
-        level: query.level,
-      });
-    }
     const [data, total] = await this.prisma.$transaction([
       this.prisma.course.findMany({
         ...pquery,
@@ -55,13 +45,6 @@ export class PurchasedCoursesService {
           id: true,
           name: true,
           banner: true,
-          level: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
         },
       }),
       this.prisma.course.count(pquery),
@@ -81,12 +64,6 @@ export class PurchasedCoursesService {
         paidVia: true,
         course: {
           include: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
             mentor: {
               select: {
                 id: true,
@@ -99,7 +76,7 @@ export class PurchasedCoursesService {
       },
     });
     if (!purchasedCourse) {
-      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Kurs topilmadi', HttpStatus.NOT_FOUND);
     }
     return purchasedCourse;
   }
@@ -196,12 +173,6 @@ export class PurchasedCoursesService {
             select: {
               id: true,
               name: true,
-              category: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
             },
           },
         },
@@ -222,7 +193,7 @@ export class PurchasedCoursesService {
       },
     });
     if (!course) {
-      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Kurs topilmadi', HttpStatus.NOT_FOUND);
     }
     const purchased = await this.prisma.purchasedCourse.findFirst({
       where: {
@@ -232,7 +203,7 @@ export class PurchasedCoursesService {
     });
     if (purchased) {
       throw new HttpException(
-        'This course already purchased',
+        'Bu kurs allaqachon sotib olingan',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -262,7 +233,7 @@ export class PurchasedCoursesService {
       },
     });
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Foydalanuvchi topilmadi', HttpStatus.NOT_FOUND);
     }
     const { course } = await this.checkCoursePurchased(
       payload.courseId,
@@ -287,7 +258,7 @@ export class PurchasedCoursesService {
     });
     if (!purchased) {
       throw new HttpException(
-        'This course has not purchased',
+        'Bu kurs sotib olinmagan',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -303,7 +274,7 @@ export class PurchasedCoursesService {
       });
 
       return {
-        message: `Status has successfully changed to Completed`
+        message: `To'lov holati muvaffaqiyatli tasdiqlandi `
       }
     }
 
@@ -318,7 +289,7 @@ export class PurchasedCoursesService {
     });
 
     return {
-      message: `Status has successfully changed to Pending`
+      message: `To'lov holati 'PENDING' ga o'zgartirildi `
     }
   }
 }

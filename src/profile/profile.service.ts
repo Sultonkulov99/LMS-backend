@@ -55,7 +55,7 @@ export class ProfileService {
     });
     return {
       success: true,
-      message: 'Phone updated successfully!',
+      message: "Telefon raqami muvaffaqiyatli o'zgartirildi!",
     };
   }
 
@@ -104,7 +104,7 @@ export class ProfileService {
 
     if (!isPasswordValid) {
       throw new HttpException(
-        'Current password invalid',
+        'Hozirgi parol xato',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -119,7 +119,7 @@ export class ProfileService {
 
     return {
       success: true,
-      message: 'New password set',
+      message: 'Yangi parol yaratildi',
     };
   }
 
@@ -131,7 +131,7 @@ export class ProfileService {
       where: { userId: authUser.id },
     });
     if (!profile) {
-      throw new NotFoundException('Mentor Profile not found');
+      throw new NotFoundException('Mentor Profili topilmadi');
     }
     return this.prisma.mentorProfile.update({
       where: { userId: authUser.id },

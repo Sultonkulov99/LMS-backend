@@ -49,7 +49,7 @@ export class QuestionsGateway implements OnGatewayConnection, OnGatewayDisconnec
 
       client.data.user = user;
       this.logger.log(`Client connected: ${user.fullName} (${user.role})`);
-    } catch (err) {
+    } catch (err: any) {
       this.logger.warn(`Connection rejected: ${err.message}`);
       client.disconnect();
     }

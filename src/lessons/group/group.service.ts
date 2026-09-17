@@ -77,7 +77,7 @@ export class LessonGroupService {
     }
     const group = await this.prisma.lessonGroup.findUnique(args);
     if (!group) {
-      throw new HttpException('Lesson Group not found', HttpStatus.NOT_FOUND);
+      throw new HttpException("Bo'lim topilmadi", HttpStatus.NOT_FOUND);
     }
     return group;
   }
@@ -90,7 +90,7 @@ export class LessonGroupService {
       },
     });
     if (!course) {
-      throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Kurs topilmadi', HttpStatus.NOT_FOUND);
     }
     return this.prisma.lessonGroup.create({
       data: {
@@ -123,7 +123,7 @@ export class LessonGroupService {
     });
     return {
       success: true,
-      message: 'Category deleted',
+      message: "Bo'lim o'chirildi",
     };
   }
 }

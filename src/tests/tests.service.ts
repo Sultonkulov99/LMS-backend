@@ -38,7 +38,7 @@ export class TestsService {
       },
     });
     if (passed) {
-      throw new BadRequestException('You already passed this test');
+      throw new BadRequestException('Allaqachon bu testni bajargansiz');
     }
     return passed;
   }
@@ -80,7 +80,7 @@ export class TestsService {
     });
     if (pastTestsCount >= 3) {
       throw new BadRequestException(
-        'Too many attempts, please try again later',
+        "Juda ko'p urinishlar bo'ldi, Iltimos birozdan keyin urinib ko'ring",
       );
     }
     const tests = await this.prisma.test.findMany({
@@ -94,7 +94,7 @@ export class TestsService {
     });
     if (tests.length !== payload.answers.length) {
       throw new HttpException(
-        "Answers' length is not the same with tests' length",
+        "Savollarning uzunligi testning uzungligi bilan teng emas",
         HttpStatus.NOT_ACCEPTABLE,
       );
     }
@@ -187,7 +187,7 @@ export class TestsService {
     await this.prisma.test.delete({
       where: { id },
     });
-    return { success: true, message: 'Test deleted' };
+    return { success: true, message: "Test o'chirildi" };
   }
 
   // Test results

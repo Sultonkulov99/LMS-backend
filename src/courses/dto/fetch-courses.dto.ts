@@ -2,14 +2,12 @@ import { PaginationDto } from '../../global/dto/pagination.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBooleanString,
-  IsEnum,
   IsNumber,
   IsNumberString,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
-import { CourseLevel } from '../../types/course';
 import { Transform } from 'class-transformer';
 import { uzMsg } from '../../global/validation-messages';
 
@@ -20,21 +18,6 @@ export class FetchCoursesDto extends PaginationDto {
   @IsOptional()
   @IsString({ message: uzMsg.isString('Qidiruv') })
   search?: string;
-
-  @ApiProperty({
-    required: false,
-    enum: CourseLevel,
-  })
-  @IsOptional()
-  @IsEnum(CourseLevel, { message: uzMsg.isEnum('Daraja') })
-  level?: CourseLevel;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsOptional()
-  @IsNumberString({}, { message: uzMsg.isNumberString('Kategoriya') })
-  category_id?: string;
 
   @ApiProperty({
     required: false,

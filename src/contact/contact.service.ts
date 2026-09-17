@@ -31,7 +31,7 @@ export class ContactService {
         throw data;
       }
       return data;
-    } catch (err) {
+    } catch (err: any) {
       const error = err?.response?.data;
       throw new HttpException(
         error?.description || 'Telegram error!',

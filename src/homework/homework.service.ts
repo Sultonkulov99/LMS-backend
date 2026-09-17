@@ -123,7 +123,7 @@ export class HomeworkService {
       },
     });
     if (!homework) {
-      throw new NotFoundException('Homework not found');
+      throw new NotFoundException('Uyga vazifa topilmadi');
     }
     await this.getLesson(homework.lessonId, authUser);
     return homework;
@@ -148,7 +148,7 @@ export class HomeworkService {
     });
     if (!lesson) {
       // console.log(lesson)
-      throw new NotFoundException('Lesson not found');
+      throw new NotFoundException('Dars topilmadi');
     }
     return lesson;
   }
@@ -156,7 +156,7 @@ export class HomeworkService {
   async createHomework(payload: CreateHomeworkDto, authUser: TAuthUser) {
     const lesson = await this.getLesson(payload.lessonId, authUser);
     if (lesson.homework) {
-      throw new BadRequestException('Lesson already has a homework');
+      throw new BadRequestException('Darsda allaqachon uyga vazifa mavjud');
     }
     let file = null
     if(payload.file) {
@@ -202,7 +202,7 @@ export class HomeworkService {
     await this.prisma.homework.delete({
       where: { id },
     });
-    return { success: true, message: 'Homework deleted' };
+    return { success: true, message: "Uyga vazifa o'chirildi" };
   }
 
   // Submissions
@@ -242,7 +242,7 @@ export class HomeworkService {
       where: { lessonId },
     });
     if (!homework) {
-      throw new BadRequestException('This lesson has no homework');
+      throw new BadRequestException('Bu darsda uyga vazifa mavjud emas');
     }
     const homeworkSubmission = await this.prisma.homeworkSubmission.findFirst({
       where: {
@@ -269,11 +269,11 @@ export class HomeworkService {
     }
     if (homeworkSubmission.status === HomeworkSubStatus.PENDING) {
       throw new BadRequestException(
-        'Your submission in pending status. Please be patient.',
+        "Sizning topshirig'ingiz jarayonda. Iltimos sabrli bo'ling",
       );
     }
     if (homeworkSubmission.status === HomeworkSubStatus.APPROVED) {
-      throw new BadRequestException('Your submission already approved.');
+      throw new BadRequestException("Sizning topshirig'ingiz allaqachon tasdiqlangan.");
     }
   }
 
@@ -390,7 +390,7 @@ export class HomeworkService {
       },
     });
     if (!submission) {
-      throw new NotFoundException('Homework Submission not found');
+      throw new NotFoundException("Uyga vazifa topshirig'i topilmadi");
     }
     return submission;
   }
@@ -427,7 +427,7 @@ export class HomeworkService {
       },
     });
     if (!submission) {
-      throw new NotFoundException('Homework Submission not found');
+      throw new NotFoundException("Uyga vazifa topshirig'i topilmadi");
     }
     return this.prisma.homeworkSubmission.update({
       where: { id: payload.submissionId },
