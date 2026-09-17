@@ -18,7 +18,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) { }
-
+ 
   private selectUser = {
     id: true,
     fullName: true,
