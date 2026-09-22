@@ -6,9 +6,11 @@ import type {
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import { ContactDto } from './dto/contact.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
 
 @Injectable()
 export class ContactService {
+  constructor (private readonly prisma: PrismaService) {}
   private readonly TG_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
   private readonly TG_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
   private readonly $telegramApi = `https://api.telegram.org/bot${this.TG_BOT_TOKEN}`;
@@ -41,6 +43,7 @@ export class ContactService {
   }
 
   async contact(data: ContactDto) {
+    await this.prisma.contactMessage.create({ data })
     const message = `📄 *Ariza* #contact
 
 👤 *To'liq ism:* _${data.fullName}_
@@ -52,5 +55,9 @@ export class ContactService {
     return {
       ok: true,
     };
+  }
+
+  async findAll() {
+    return await this.prisma.contactMessage.findMany()
   }
 }
