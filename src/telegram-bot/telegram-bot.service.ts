@@ -56,7 +56,6 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
 
     const chatId = message.chat.id;
 
-    // 1. Handle contact sharing
     if (message.contact) {
       const phone = normalizePhoneNumber(message.contact.phone_number);
       if (phone) {
@@ -67,7 +66,6 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
-    // 2. Handle text message
     if (message.text) {
       const text = message.text.trim();
 
@@ -76,35 +74,69 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
         return;
       }
 
-      await this.sendMessage(chatId, "❌ Kechirasiz, raqamni qo'lda yozib yuborish mumkin emas.\n" +
-        "Iltimos, pastdagi **'📱 Telefon raqamni yuborish'** tugmasini bosing!", {
-        reply_markup: {
-          keyboard: [
-            [
-              {
-                text: '📱 Telefon raqamni yuborish',
-                request_contact: true,
-              },
+      if (text === "🔒 Parolni o'zgartirish") {
+        await this.redisService.set('where_otp', 'resetPass', 600)
+        return this.sendPhone(chatId, "🔒 Parolni o'zgartirish uchun telefon raqamingizni yuboring")
+      }
+      if (text === "🪪 Ro'yhatdan o'tish") {
+        await this.redisService.set('where_otp', 'reg', 600)
+        return this.sendPhone(chatId, "🪪 Ro'yhatdan o'tish uchun telefon raqamingizni yuboring");
+      }
+
+      const where = await this.redisService.get("where_otp")
+      if (where) {
+        await this.sendMessage(chatId, "❌ Kechirasiz, raqamni qo'lda yozib yuborish mumkin emas.\n" +
+          "Iltimos, pastdagi 📱 Telefon raqam yuborish tugmasini bosing!", {
+          reply_markup: {
+            keyboard: [
+              [
+                {
+                  text: "📱 Telefon raqam yuborish",
+                  request_contact: true
+                },
+              ],
             ],
-          ],
-          resize_keyboard: true,
-          one_time_keyboard: true,
-        },
-      });
+            resize_keyboard: true,
+            one_time_keyboard: true,
+          },
+        });
+      }
     }
   }
 
   private async sendGreeting(chatId: number) {
     await this.sendMessage(
       chatId,
-      "Assalomu alaykum! LMS platformasiga ro'yxatdan o'tish uchun telefon raqamingizni yuboring. Tasdiqlash kodi shu raqam uchun Telegram orqali yuboriladi.",
+      "Assalomu alaykum! LMS platformasiga ro'yxatdan o'tish yoki parolni o'zgartirish uchun telefon raqamingizni yuboring. Tasdiqlash kodi shu raqam uchun Telegram orqali yuboriladi.",
       {
         reply_markup: {
           keyboard: [
             [
               {
-                text: '📱 Telefon raqamni yuborish',
-                request_contact: true,
+                text: "🪪 Ro'yhatdan o'tish",
+              },
+              {
+                text: "🔒 Parolni o'zgartirish",
+              },
+            ],
+          ],
+          resize_keyboard: true,
+          one_time_keyboard: true,
+        },
+      }
+    );
+  }
+  private async sendPhone(chatId: number, cause: string) {
+    await this.sendMessage(
+      chatId,
+      cause,
+      {
+        reply_markup: {
+          keyboard: [
+            [
+              {
+                text: "📱 Telefon raqam yuborish",
+                request_contact: true
               },
             ],
           ],
@@ -116,14 +148,52 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async generateAndSendOtp(chatId: number, phone: string) {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const redisKey = `reg_${phone}`;
+    const where = await this.redisService.get("where_otp")
+    if (where) {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const redisKey = `${where}_${phone}`;
 
-    // Save to Redis with 5 minutes (300 seconds) expiration
-    await this.redisService.set(redisKey, otp, 300);
+      // Save to Redis with 5 minutes (300 seconds) expiration
+      await this.redisService.set(redisKey, otp, 300);
 
-    const text = `Sizning tasdiqlash kodingiz: *${otp}*\n\nUshbu kodni ro'yxatdan o'tish sahifasiga kiriting. Kod 5 daqiqa davomida faol bo'ladi.`;
-    await this.sendMessage(chatId, text, { parse_mode: 'Markdown' });
+      const page = where === 'reg' ? "ro'yxatdan o'tish" : "parolni yangilash"
+      const text = `Sizning tasdiqlash kodingiz: *${otp}*\n\nUshbu kodni ${page} sahifasiga kiriting. Kod 5 daqiqa davomida faol bo'ladi.`;
+      await this.sendMessage(chatId, text, {
+        reply_markup: {
+          keyboard: [
+            [
+              {
+                text: "🪪 Ro'yhatdan o'tish",
+              },
+              {
+                text: "🔒 Parolni o'zgartirish",
+              },
+            ],
+          ],
+          resize_keyboard: true,
+          one_time_keyboard: true,
+        },
+        parse_mode: 'Markdown',
+      });
+      await this.redisService.del('where_otp')
+    } else {
+      await this.sendMessage(chatId, "Yo'nalish tanlanmagan", {
+        reply_markup: {
+          keyboard: [
+            [
+              {
+                text: "🪪 Ro'yhatdan o'tish",
+              },
+              {
+                text: "🔒 Parolni o'zgartirish",
+              },
+            ],
+          ],
+          resize_keyboard: true,
+          one_time_keyboard: true,
+        },
+      });
+    }
   }
 
   private async sendMessage(chatId: number, text: string, extra: any = {}) {

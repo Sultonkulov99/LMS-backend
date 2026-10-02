@@ -83,7 +83,7 @@ export class AuthService {
     if (!await checkPassword(password, user.password)) {
       throw new UnauthorizedException("Login yoki parol hato");
     }
-    
+
     if (user.role === UserRole.STUDENT && user.purchasedCourses[0].status !== PaymentStatus.COMPLETED) {
       throw new ForbiddenException("Foydalanuvchida sotib olingan kurslar mavjud emas");
     }
@@ -131,7 +131,6 @@ export class AuthService {
       );
     }
 
-    // Delete OTP after successful verification to prevent reuse
     await this.redisService.del(redisKey);
 
     const hashedPassword = await hashPassword(payload.password);
@@ -200,11 +199,17 @@ export class AuthService {
 
   async resetPassword(payload: ResetPasswordDto) {
     const phone = normalizePhoneNumber(payload.phone) || payload.phone;
-    // await this.verificationService.checkConfirmOtp({
-    //   type: EVerificationTypes.RESET_PASSWORD,
-    //   otp: payload.otp,
-    //   phone: payload.phone,
-    // });
+
+    const redisKey = `resetPass_${phone}`;
+    const storedOtp = await this.redisService.get(redisKey);
+    if (!storedOtp || storedOtp !== payload.otp) {
+      throw new HttpException(
+        'Noto\'g\'ri yoki muddati o\'tgan tasdiqlash kodi',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    await this.redisService.del(redisKey);
     const hashedPassword = await hashPassword(payload.password);
     await this.prisma.user.update({
       where: {
