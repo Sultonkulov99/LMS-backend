@@ -37,11 +37,11 @@ export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
 
   @ApiOperation({
-    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}`,
+    summary: `${UserRole.STUDENT}, ${UserRole.SUPER_ADMIN}, ${UserRole.MENTOR} `,
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard, PurchasedCourseGuard, LessonTestGuard)
-  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN])
+  @Roles([UserRole.STUDENT, UserRole.SUPER_ADMIN, UserRole.MENTOR])
   @Get('single/:lessonId')
   getSingleLesson(@Param('lessonId') id: string) {
     return this.lessonsService.getSingleLesson(id);
