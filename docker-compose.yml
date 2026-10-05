@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -9,7 +11,7 @@ services:
     shm_size: 128mb
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: 12345
       POSTGRES_DB: lms
     command: >
       postgres
@@ -24,8 +26,8 @@ services:
       -c checkpoint_completion_target=0.9
       -c random_page_cost=1.1
       -c log_min_duration_statement=1000
-      -c log_connections=on
-      -c log_disconnections=on
+    ports:
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -50,15 +52,17 @@ services:
     cpus: 0.5
     command: >
       redis-server
-      --requirepass ${REDIS_PASSWORD}
+      --requirepass 12345
       --maxmemory 100mb
       --maxmemory-policy allkeys-lru
       --save ""
       --appendonly no
+    ports:
+      - "6379:6379"
     networks:
       - lms-net
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD} ping | grep PONG"]
+      test: ["CMD", "redis-cli", "-a", "12345", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -84,10 +88,10 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: "postgresql://postgres:${DB_PASSWORD}@postgres:5432/lms?schema=public"
+      DATABASE_URL: "postgresql://postgres:12345@postgres:5432/lms?schema=public"
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PASSWORD: 12345
       REDIS_DB: 0
       CORS: "*"
       NODE_ENV: production
