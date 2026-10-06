@@ -2,17 +2,16 @@ name: Deploy LMS Backend to VPS
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+
+concurrency:
+  group: deploy-lms
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -24,31 +23,29 @@ jobs:
           command_timeout: 30m
           script: |
             set -e
-            echo "📁 Preparing app folder..."
-            mkdir -p /var/www/lms/backend
-            cd /var/www/lms/backend
+            APP_DIR=/var/www/lms/backend
+            mkdir -p $APP_DIR /var/www/lms/uploads
+            chown -R 1001:1001 /var/www/lms/uploads
+            cd $APP_DIR
 
-            if [ ! -d ".git" ]; then
-              echo "📥 Cloning repository..."
-              git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git .
+            REPO=https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git
+            if [ ! -d .git ]; then
+              git clone $REPO .
             else
-              echo "♻️ Pulling latest code..."
-              git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Sultonkulov99/LMS-backend.git
-              git reset --hard
-              git clean -fd
-              git pull origin main
+              git remote set-url origin $REPO
+              git fetch origin main
+              git reset --hard origin/main
             fi
 
-            echo "🛑 Stopping old containers..."
-            docker compose down --remove-orphans || true
+            if [ ! -f .env ]; then
+              echo "❌ .env topilmadi: $APP_DIR/.env yarating (.env.example'dan)"
+              exit 1
+            fi
 
-            echo "🛠️ Building and starting..."
-            docker compose build --parallel
-            docker compose up -d
+            # down QILINMAYDI: avval build, keyin faqat o'zgargan containerlar almashadi
+            docker compose up -d --build --remove-orphans
 
-            echo "🧹 Cleaning up..."
-            docker builder prune -f
             docker image prune -f
-
-            echo "✅ LMS Backend deploy finished!"
+            docker builder prune -f
+            docker compose ps
             docker compose logs --tail=30 app

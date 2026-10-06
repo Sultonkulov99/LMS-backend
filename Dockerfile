@@ -2,25 +2,21 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
-COPY prisma ./prisma/
-COPY prisma.config.ts ./
-RUN npx prisma generate
 COPY . .
-RUN npm run build --if-present
+# generate bazaga ulanmaydi, faqat config o'qishi uchun soxta URL
+RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npx prisma generate
+RUN npm run build
 
-FROM node:20-alpine AS runner
+FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
-
 RUN apk add --no-cache tini
 
-COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# prisma CLI (migrate deploy) runtime'da kerak, shuning uchun node_modules to'liq olinadi
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder /app/prisma.config.ts ./
 COPY --from=builder /app/dist ./dist
 
 RUN addgroup -g 1001 nodejs \
@@ -29,8 +25,6 @@ RUN addgroup -g 1001 nodejs \
     && chown -R nodeuser:nodejs /app
 
 USER nodeuser
-
-EXPOSE 3000
+EXPOSE 9000
 ENTRYPOINT ["/sbin/tini", "--"]
-
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
