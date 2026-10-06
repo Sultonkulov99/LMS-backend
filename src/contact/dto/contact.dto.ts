@@ -15,14 +15,18 @@ export class ContactDto {
   @MaxLength(30, { message: uzMsg.maxLength("To'liq ism", 30) })
   fullName: string;
 
+  @ApiProperty({})
+  @IsOptional()
+  @IsString({ message: uzMsg.isString("Telegram_Id") })
+  telegramId?: string;
+
   @ApiProperty({
     example: '+998902400025',
   })
-  @IsOptional()
   @Matches(/^(\+?998)(20|33|50|77|88|90|91|93|94|95|97|98|99)\d{7}$/, {
     message: "Telefon raqami +998XXXXXXXXX yoki 998XXXXXXXXX formatida bo'lishi kerak",
   })
-  phone?: string;
+  phone: string;
 
   @ApiProperty({
     example:
@@ -30,5 +34,6 @@ export class ContactDto {
   })
   @IsString({ message: uzMsg.isString('Xabar') })
   @MaxLength(1000, { message: uzMsg.maxLength('Xabar', 1000) })
-  message: string;
+  @IsOptional()
+  message?: string;
 }

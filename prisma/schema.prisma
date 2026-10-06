@@ -68,6 +68,7 @@ model User {
   lastActivity        LastActivity?
   views               LessonView[]
   notifications       Notification[]
+  comments            Comment[]
 }
 
 model MentorProfile {
@@ -123,6 +124,7 @@ model Course {
   rates        Rating[]
   assistants   AssignedCourse[]
   questions    Question[]
+  comments     Comment[]
 }
 
 model PurchasedCourse {
@@ -294,4 +296,23 @@ model Notification {
 
   @@index([userId, read])
   @@index([userId, createdAt])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  message   String
+  studentId Int
+  courseId  String
+  user      User     @relation(fields: [studentId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id         Int      @id @default(autoincrement())
+  fullName   String
+  phone      String
+  telegramId String?
+  message    String?
+  createdAt  DateTime @default(now())
 }

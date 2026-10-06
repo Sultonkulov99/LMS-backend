@@ -21,6 +21,7 @@ import { RedisModule } from './global/redis/redis.module';
 import { TelegramBotModule } from './telegram-bot/telegram-bot.module';
 import { NotificationModule } from './notification/notification.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     UsersModule,
     PrismaModule,
     ContactModule,
+    CommentModule,
     FilesModule,
     SeederModule,
     RedisModule,
